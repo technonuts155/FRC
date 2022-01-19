@@ -4,6 +4,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import io.github.pseudoresonance.pixy2api.Pixy2;
+import io.github.pseudoresonance.pixy2api.Pixy2CCC;
+import io.github.pseudoresonance.pixy2api.Pixy2.LinkType;
+import io.github.pseudoresonance.pixy2api.links.I2CLink;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -24,6 +28,19 @@ public class Drive {
 
     // Create drivetrain object
     private DifferentialDrive drivetrain = new DifferentialDrive(leftMotors, rightMotors);
+
+    // Pixycam
+    private Pixy2 pixy;
+
+    public void initializePixy() {
+        pixy = Pixy2.createInstance(new I2CLink());
+        pixy.init();
+    }
+
+    public void pixyShowBlueTargets() {
+        int targets = pixy.getCCC().getBlocks(false, Pixy2CCC.CCC_SIG1, 25);
+        SmartDashboard.putNumber("Blue targets", targets);
+    }
 
     public void invertRightDriveMotors() {
         rightMotors.setInverted(true);

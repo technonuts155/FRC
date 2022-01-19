@@ -36,6 +36,9 @@ public class Robot extends TimedRobot {
 
     // Differential drive no longer inverts right motors by default as of 2022
     drive.invertRightDriveMotors();
+
+    // Initialize Pixycam
+    drive.initializePixy();
   
     // Start camera stream for dashboard
     CameraServer.startAutomaticCapture();
@@ -49,7 +52,12 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+
+    // Show on dashboard how many blue targets are found
+    drive.pixyShowBlueTargets();
+
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
