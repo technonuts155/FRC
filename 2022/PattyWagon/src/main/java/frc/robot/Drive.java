@@ -25,13 +25,27 @@ public class Drive {
     // Create drivetrain object
     private DifferentialDrive drivetrain = new DifferentialDrive(leftMotors, rightMotors);
 
+    // Variables
+    private double speedLimit = 1;
     public void invertRightDriveMotors() {
         rightMotors.setInverted(true);
+    }
+
+
+    private void speedLimitControl() {
+        if(OI.driveController.getAButtonPressed() == true && speedLimit > 0.1) {
+            speedLimit = speedLimit - 0.1;
+        }
+        if(OI.driveController.getYButtonPressed() == true && speedLimit < 1) {
+            speedLimit = speedLimit + 0.1;
+        }
+        SmartDashboard.putNumber("speed limit control #", speedLimit);
     }
 
     public void XboxDrive() {
 
         // Read controller values
+        speedLimitControl();
         double rightTriggerAxis = OI.driveController.getRightTriggerAxis();
         double leftTriggerAxis = OI.driveController.getLeftTriggerAxis();
         double speed = rightTriggerAxis - leftTriggerAxis;
@@ -51,7 +65,7 @@ public class Drive {
         }
 
         // Give values to motor controllers
-        drivetrain.arcadeDrive(speed, rotation * .75);
+        drivetrain.arcadeDrive(speed * speedLimit, rotation * .50 * speedLimit);
     }
 
     public void displayMotorControllerInfo() {

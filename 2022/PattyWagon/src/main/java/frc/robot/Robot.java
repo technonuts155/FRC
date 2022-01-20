@@ -49,7 +49,10 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    SmartDashboard.putNumber("D-pad value", OI.driveController.getPOV());
+
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
