@@ -8,6 +8,7 @@ import io.github.pseudoresonance.pixy2api.Pixy2;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC;
 import io.github.pseudoresonance.pixy2api.Pixy2.LinkType;
 import io.github.pseudoresonance.pixy2api.links.I2CLink;
+import io.github.pseudoresonance.pixy2api.links.SPILink;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -33,12 +34,12 @@ public class Drive {
     private Pixy2 pixy;
 
     public void initializePixy() {
-        pixy = Pixy2.createInstance(new I2CLink());
+        pixy = Pixy2.createInstance(new SPILink());
         pixy.init();
     }
 
     public void pixyShowBlueTargets() {
-        int targets = pixy.getCCC().getBlocks(false, Pixy2CCC.CCC_SIG1, 25);
+        int targets = pixy.getCCC().getBlocks(false, Pixy2CCC.CCC_SIG1, 10);
         SmartDashboard.putNumber("Blue targets", targets);
     }
 
