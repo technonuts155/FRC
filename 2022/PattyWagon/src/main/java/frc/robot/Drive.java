@@ -1,14 +1,20 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.pseudoresonance.pixy2api.Pixy2;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC;
 import io.github.pseudoresonance.pixy2api.Pixy2.LinkType;
+import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 import io.github.pseudoresonance.pixy2api.links.I2CLink;
 import io.github.pseudoresonance.pixy2api.links.SPILink;
+
+import java.util.ArrayList;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -41,6 +47,9 @@ public class Drive {
     public void pixyShowBlueTargets() {
         int targets = pixy.getCCC().getBlocks(false, Pixy2CCC.CCC_SIG1, 10);
         SmartDashboard.putNumber("Blue targets", targets);
+        //ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
+        //Block firstBlock = blocks.get(0);
+        SmartDashboard.putBoolean("Red Alliance?", DriverStation.getAlliance() == Alliance.Red); 
     }
 
     public void invertRightDriveMotors() {
