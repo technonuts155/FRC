@@ -39,6 +39,39 @@ public class Drive {
     // Pixycam
     private Pixy2 pixy;
 
+    public double getAreaOfBlock(Block block) {
+        return (block.getHeight() * block.getWidth());
+    }
+
+    public boolean matchesAllianceColor(Block block) {
+        if(DriverStation.getAlliance() == Alliance.Blue) {
+            //it gon' be blue
+            return(block.getSignature() == 1);
+        } else {
+            //it gon' be red
+            return (block.getSignature() == 2);
+        }
+    }
+
+    public boolean matchesBlockRatioWH(Block block, double tolerance) {
+        double ratio = block.getWidth() / block.getHeight();
+        return (ratio <= 1 + tolerance && ratio >= 1 - tolerance);
+    }
+
+    public Block getLargestBlock(ArrayList<Block> blocks) {
+        Block largestBlock = null;
+        for(Block block : blocks) {
+            if(largestBlock == null) {
+                largestBlock = block; 
+            } else {
+                if(getAreaOfBlock(largestBlock) < getAreaOfBlock(block)) {
+                    largestBlock = block;
+                }
+            }  
+        }
+        return largestBlock;
+    }
+
     public void initializePixy() {
         pixy = Pixy2.createInstance(new SPILink());
         pixy.init();
