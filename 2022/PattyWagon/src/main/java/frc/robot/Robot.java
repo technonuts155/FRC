@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -53,10 +53,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+    Block target = drive.getTargetBlock();
     // Show on dashboard how many blue targets are found
-    drive.pixyShowBlueTargets();
-
+    SmartDashboard.putBoolean("Block found", target != null);
+    if(target != null) {
+    SmartDashboard.putNumber("Targets X Value:", target.getX());
+    SmartDashboard.putNumber("Targets Y Value", target.getY());
+    SmartDashboard.putNumber("Targets Width:", target.getWidth());
+    SmartDashboard.putNumber("Targets Height", target.getHeight());
+    }
   }
 
   /**

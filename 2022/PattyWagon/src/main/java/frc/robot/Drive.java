@@ -53,7 +53,7 @@ public class Drive {
         }
     }
 
-    public boolean matchesBlockRatioWH(Block block, double tolerance) {
+    public boolean matchesBlockRatioHW(Block block, double tolerance) {
         double ratio = block.getWidth() / block.getHeight();
         return (ratio <= 1 + tolerance && ratio >= 1 - tolerance);
     }
@@ -70,6 +70,38 @@ public class Drive {
             }  
         }
         return largestBlock;
+    }
+
+    public Block getTargetBlock() {
+
+        int blocksFound;
+        if (DriverStation.getAlliance() == Alliance.Blue) {
+            blocksFound = pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG1, 10);
+        } else {
+            blocksFound = pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG2, 10);
+        }
+        SmartDashboard.putNumber("Blocks Found", blocksFound);
+
+        ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
+        ArrayList<Block> colorBlocks = new ArrayList<Block>();
+        ArrayList<Block> ratioedBlocks = new ArrayList<Block>();
+
+        for(Block block : blocks) {
+            if(matchesAllianceColor(block) == true) {
+                colorBlocks.add(block);
+            }
+        } for(Block block : colorBlocks) {
+            if(matchesBlockRatioHW(block, .5) == true) {
+                ratioedBlocks.add(block);
+            }
+        }
+
+        SmartDashboard.putNumber("All blocks", blocks.size());
+        SmartDashboard.putNumber("Color Blocks", colorBlocks.size());
+        SmartDashboard.putNumber("Ratio Blocks", ratioedBlocks.size());
+
+
+        return getLargestBlock(ratioedBlocks);
     }
 
     public void initializePixy() {
