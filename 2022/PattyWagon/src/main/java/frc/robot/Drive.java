@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,9 +19,7 @@ import java.util.ArrayList;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 public class Drive {
-
     // Motor time
     private CANSparkMax leftMotor1 = new CANSparkMax(RobotMap.leftMotor1, MotorType.kBrushless);
     private CANSparkMax leftMotor2 = new CANSparkMax(RobotMap.leftMotor2, MotorType.kBrushless);
@@ -38,6 +37,26 @@ public class Drive {
 
     // Pixycam
     private Pixy2 pixy;
+    private final double HORIZONTAL_CENTER = 157.5;
+    private PIDController drivePID = new PIDController(0, 0, 0);
+
+    public void resetPID() {
+        drivePID.reset();
+    }
+
+    public void setPIDTolerance(double tolerance) {
+        drivePID.setTolerance(tolerance);
+    }
+
+    private double getBlockCenterX(Block block) {
+        return (block.getX() + (block.getWidth()/2));
+    }
+
+    private void updatePIDConstants() {
+        drivePID.setP(SmartDashboard.getNumber("m_kp:", 0));
+        drivePID.setI(SmartDashboard.getNumber("m_ki:", 0));
+        drivePID.setD(SmartDashboard.getNumber("m_kd:", 0));
+    }
 
     public double getAreaOfBlock(Block block) {
         return (block.getHeight() * block.getWidth());
@@ -109,16 +128,19 @@ public class Drive {
         pixy.init();
     }
 
-    public void pixyShowBlueTargets() {
-        int targets = pixy.getCCC().getBlocks(false, Pixy2CCC.CCC_SIG1, 10);
-        SmartDashboard.putNumber("Blue targets", targets);
-        //ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
-        //Block firstBlock = blocks.get(0);
-        SmartDashboard.putBoolean("Red Alliance?", DriverStation.getAlliance() == Alliance.Red); 
-    }
-
     public void invertRightDriveMotors() {
         rightMotors.setInverted(true);
+    }
+
+    public void pixyAutopilot() {
+        Block target = getTargetBlock();
+
+        updatePIDConstants();
+
+        double turnRate = drivePID.calculate(getBlockCenterX(target), HORIZONTAL_CENTER);
+
+        drivetrain.arcadeDrive(0, turnRate);
+
     }
 
     public void XboxDrive() {

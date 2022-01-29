@@ -39,6 +39,11 @@ public class Robot extends TimedRobot {
 
     // Initialize Pixycam
     drive.initializePixy();
+
+    // Reset autopilot PID and set tolerance
+    drive.resetPID();
+    drive.setPIDTolerance(10);        // Units in pixels
+
   
     // Start camera stream for dashboard
     CameraServer.startAutomaticCapture();
@@ -61,6 +66,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Targets Y Value", target.getY());
     SmartDashboard.putNumber("Targets Width:", target.getWidth());
     SmartDashboard.putNumber("Targets Height", target.getHeight());
+
     }
   }
 
@@ -103,7 +109,18 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    drive.XboxDrive();
+    // Autopilot with pixycam while A button is held
+    // Normal drive otherwise
+    if (OI.driveController.getAButton()) {
+      drive.pixyAutopilot();
+    } else {
+      drive.XboxDrive();
+    }
+
+    if (OI.driveController.getAButtonReleased()) {
+      // Reset drive PID when leaving autopilot
+      drive.resetPID();
+    }
   }
 
   /** This function is called once when the robot is disabled. */
