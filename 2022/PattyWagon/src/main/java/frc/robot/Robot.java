@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
       SmartDashboard.putNumber("Targets Height", target.getHeight());
     }
 
-    drive.updatePIDValues();
+    // drive.updatePIDValues();
     drive.displayPIDValues();
     drive.displayMotorControllerInputs();
   }

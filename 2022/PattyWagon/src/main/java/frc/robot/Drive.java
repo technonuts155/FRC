@@ -37,7 +37,7 @@ public class Drive {
     private final double HORIZONTAL_CENTER = 157.5;
 
     // PIDController for centering on target found by pixycam
-    private PIDController drivePID = new PIDController(0.005, 0, 0);
+    private PIDController drivePID = new PIDController(0.006, 0.01, 0.0006);
 
     public void resetPID() {
         drivePID.reset();
@@ -153,9 +153,9 @@ public class Drive {
             double turnRate = drivePID.calculate(getBlockCenterX(target), HORIZONTAL_CENTER);
             SmartDashboard.putNumber("Error", getBlockCenterX(target) - HORIZONTAL_CENTER);
             SmartDashboard.putNumber("Turn rate", turnRate);
-            drivetrain.arcadeDrive(0, turnRate);
+            drivetrain.arcadeDrive(.25, turnRate * -1);
         } else {
-            drivetrain.arcadeDrive(0, 0);
+            drivetrain.arcadeDrive(.25, 0);
         }
 
     }
