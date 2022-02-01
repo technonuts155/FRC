@@ -1,9 +1,26 @@
 <xml version="1.0">
 <dashboard>
-	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Image">
-		<location x="420" y="11"/>
-		<property name="Image File" value="C:\Users\95kts\Desktop\Dice.png"/>
-	</static-widget>
+	<widget field="Right Drive 3, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="192"/>
+	</widget>
+	<widget field="Right Drive 2, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="171"/>
+	</widget>
+	<widget field="Left Drive 3, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="150"/>
+	</widget>
+	<widget field="Left Drive 2, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="129"/>
+	</widget>
+	<widget field="D" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="108"/>
+	</widget>
+	<widget field="I" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="87"/>
+	</widget>
+	<widget field="P" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="66"/>
+	</widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Label">
 		<location x="298" y="388"/>
 		<property name="Text" value="Right Motors Input"/>
@@ -50,31 +67,32 @@
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.RobotPreferences">
 		<location x="473" y="235"/>
 	</static-widget>
-	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Image">
-		<location x="1" y="0"/>
-		<width>1022</width>
-		<height>628</height>
-		<property name="Image File" value="C:\Users\95kts\Desktop\istockphoto-1224665144-170667a.jpg"/>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
+		<location x="804" y="25"/>
+		<width>521</width>
+		<height>390</height>
+		<property name="Camera Choice" value=""/>
 	</static-widget>
 </dashboard>
 <live-window>
 	<widget field="Ungrouped" type="LW Subsystem" class="edu.wpi.first.smartdashboard.livewindow.elements.LWSubsystem">
-		<widget field="PIDController[1]" type="PIDController" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
-			<location x="6" y="16"/>
-			<height>155</height>
-			<width>139</width>
+		<widget field="PIDController[1]" type="Table" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
+			<location x="0" y="0"/>
+			<height>0</height>
+			<width>0</width>
+		</widget>
+		<widget field="PIDController[1]" type="Table" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
+			<location x="0" y="0"/>
+			<height>0</height>
+			<width>0</width>
 		</widget>
 		<location x="0" y="0"/>
 		<width>151</width>
 		<height>177</height>
 	</widget>
 </live-window>
-	<hidden field="P"/>
-	<hidden field="Drive P"/>
-	<hidden field="D"/>
-	<hidden field="Left Drive 3, Input"/>
-	<hidden field="Right Drive 3, Input"/>
-	<hidden field="I"/>
-	<hidden field="Left Drive 2, Input"/>
-	<hidden field="Right Drive 2, Input"/>
+	<hidden field="Targets Width:"/>
+	<hidden field="Targets Y Value"/>
+	<hidden field="Targets Height"/>
+	<hidden field="Targets X Value:"/>
 </xml>
