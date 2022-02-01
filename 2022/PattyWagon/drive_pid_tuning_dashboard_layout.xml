@@ -1,0 +1,80 @@
+<xml version="1.0">
+<dashboard>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Image">
+		<location x="420" y="11"/>
+		<property name="Image File" value="C:\Users\95kts\Desktop\Dice.png"/>
+	</static-widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Label">
+		<location x="298" y="388"/>
+		<property name="Text" value="Right Motors Input"/>
+	</static-widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Label">
+		<location x="95" y="385"/>
+		<property name="Text" value="Left Motors Input"/>
+	</static-widget>
+	<widget field="Right Drive 1, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.SimpleDial">
+		<location x="218" y="236"/>
+		<property name="Upper Limit" value="1.0"/>
+		<property name="Lower Limit" value="-1.0"/>
+		<property name="Tick Interval" value="0.2"/>
+	</widget>
+	<widget field="Left Drive 1, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.SimpleDial">
+		<location x="12" y="234"/>
+		<property name="Upper Limit" value="1.0"/>
+		<property name="Lower Limit" value="-1.0"/>
+		<property name="Tick Interval" value="0.2"/>
+	</widget>
+	<widget field="Block found" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="757" y="6"/>
+		<width>110</width>
+		<height>49</height>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.ConnectionIndicator">
+		<location x="1" y="0"/>
+	</static-widget>
+	<widget field="Ratio Blocks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="605" y="74"/>
+	</widget>
+	<widget field="Color Blocks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="607" y="50"/>
+	</widget>
+	<widget field="All blocks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="621" y="28"/>
+	</widget>
+	<widget field="Blocks Found" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="603" y="6"/>
+	</widget>
+	<widget field="Auto choices" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="34" y="-1"/>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.RobotPreferences">
+		<location x="473" y="235"/>
+	</static-widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Image">
+		<location x="1" y="0"/>
+		<width>1022</width>
+		<height>628</height>
+		<property name="Image File" value="C:\Users\95kts\Desktop\istockphoto-1224665144-170667a.jpg"/>
+	</static-widget>
+</dashboard>
+<live-window>
+	<widget field="Ungrouped" type="LW Subsystem" class="edu.wpi.first.smartdashboard.livewindow.elements.LWSubsystem">
+		<widget field="PIDController[1]" type="PIDController" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
+			<location x="6" y="16"/>
+			<height>155</height>
+			<width>139</width>
+		</widget>
+		<location x="0" y="0"/>
+		<width>151</width>
+		<height>177</height>
+	</widget>
+</live-window>
+	<hidden field="P"/>
+	<hidden field="Drive P"/>
+	<hidden field="D"/>
+	<hidden field="Left Drive 3, Input"/>
+	<hidden field="Right Drive 3, Input"/>
+	<hidden field="I"/>
+	<hidden field="Left Drive 2, Input"/>
+	<hidden field="Right Drive 2, Input"/>
+</xml>

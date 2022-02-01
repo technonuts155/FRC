@@ -2,23 +2,20 @@ package frc.robot;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.pseudoresonance.pixy2api.Pixy2;
-import io.github.pseudoresonance.pixy2api.Pixy2CCC;
-import io.github.pseudoresonance.pixy2api.Pixy2.LinkType;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
-import io.github.pseudoresonance.pixy2api.links.I2CLink;
 import io.github.pseudoresonance.pixy2api.links.SPILink;
 
 import java.util.ArrayList;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 public class Drive {
     // Motor time
     private CANSparkMax leftMotor1 = new CANSparkMax(RobotMap.leftMotor1, MotorType.kBrushless);
@@ -38,15 +35,22 @@ public class Drive {
     // Pixycam
     private Pixy2 pixy;
     private final double HORIZONTAL_CENTER = 157.5;
-    private PIDController drivePID = new PIDController(1/200, 0, 0);
 
-    public void initPID (double kP, double kI, double kD) {
-        drivePID.setP(kP);
-        drivePID.setI(kI);
-        drivePID.setD(kD);
-    }
+    // PIDController for centering on target found by pixycam
+    private PIDController drivePID = new PIDController(0.005, 0, 0);
+
     public void resetPID() {
         drivePID.reset();
+    }
+
+    // Used for tuning the PID
+    // Pulls numbers from the Preferences box of the Smartdashboard
+    public void updatePIDValues() {
+        drivePID.setP(Preferences.getDouble("drivePID kP", 0));
+        drivePID.setI(Preferences.getDouble("drivePID kI", 0));
+        drivePID.setD(Preferences.getDouble("drivePID kD", 0));
+        drivePID.setTolerance(Preferences.getDouble("drivePID Tolerance", 10));
+        drivePID.setSetpoint(Preferences.getDouble("drivePID Setpoint", 157.5));
     }
 
     public void setPIDSetpoint(double setpoint) {
@@ -96,6 +100,7 @@ public class Drive {
 
     public Block getTargetBlock() {
 
+        // Getting block cache doesn't work if you don't get block count first
         int blocksFound;
         if (DriverStation.getAlliance() == Alliance.Blue) {
             blocksFound = pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG1, 10);
@@ -108,11 +113,17 @@ public class Drive {
         ArrayList<Block> colorBlocks = new ArrayList<Block>();
         ArrayList<Block> ratioedBlocks = new ArrayList<Block>();
 
+        // Create new list of only blocks matching our alliance color
         for(Block block : blocks) {
             if(matchesAllianceColor(block) == true) {
                 colorBlocks.add(block);
             }
-        } for(Block block : colorBlocks) {
+        }
+
+        // Create new list of only blocks that are square enough
+        // Perfectly identified cargo should be a square because
+        // a bounding box drawn around a circle is a square.
+        for(Block block : colorBlocks) {
             if(matchesBlockRatioHW(block, .5) == true) {
                 ratioedBlocks.add(block);
             }
@@ -122,7 +133,7 @@ public class Drive {
         SmartDashboard.putNumber("Color Blocks", colorBlocks.size());
         SmartDashboard.putNumber("Ratio Blocks", ratioedBlocks.size());
 
-
+        // Return the area-wise largest block of the remaining blocks
         return getLargestBlock(ratioedBlocks);
     }
 
@@ -184,18 +195,18 @@ public class Drive {
         drivetrain.arcadeDrive(speed, rotation * .75);
     }
 
-    public void displayMotorControllerInfo() {
-
-        // Displays output currents for each speed controller on dashboard
-        /*
+    public void displayMotorControllerOutputCurrents() {
+        // Displays output currents for each speed controller (in amps)
         SmartDashboard.putNumber("Left Drive 1, Current", leftMotor1.getOutputCurrent());
         SmartDashboard.putNumber("Left Drive 2, Current", leftMotor2.getOutputCurrent());
         SmartDashboard.putNumber("Left Drive 3, Current", leftMotor3.getOutputCurrent());
         SmartDashboard.putNumber("Right Drive 1, Current", rightMotor1.getOutputCurrent());
         SmartDashboard.putNumber("Right Drive 2, Current", rightMotor2.getOutputCurrent());
         SmartDashboard.putNumber("Right Drive 3, Current", rightMotor3.getOutputCurrent());
-        */
+    }
 
+    public void displayMotorControllerInputs() {
+        // Displays the input given to each speed controller (range of -1 -> 1)
         SmartDashboard.putNumber("Left Drive 1, Input", leftMotor1.get());
         SmartDashboard.putNumber("Left Drive 2, Input", leftMotor2.get());
         SmartDashboard.putNumber("Left Drive 3, Input", leftMotor3.get());

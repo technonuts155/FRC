@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -39,12 +40,6 @@ public class Robot extends TimedRobot {
 
     // Initialize Pixycam
     drive.initializePixy();
-
-    // Reset autopilot PID and set tolerance
-    //drive.resetPID();
-    drive.setPIDTolerance(10);        // Units in pixels
-    drive.setPIDSetpoint(315/2);      // Horizontal center of pixy resolution
-
   
     // Start camera stream for dashboard
     CameraServer.startAutomaticCapture();
@@ -62,12 +57,17 @@ public class Robot extends TimedRobot {
     Block target = drive.getTargetBlock();
     // Show on dashboard how many blue targets are found
     SmartDashboard.putBoolean("Block found", target != null);
+
     if(target != null) {
-    SmartDashboard.putNumber("Targets X Value:", target.getX());
-    SmartDashboard.putNumber("Targets Y Value", target.getY());
-    SmartDashboard.putNumber("Targets Width:", target.getWidth());
-    SmartDashboard.putNumber("Targets Height", target.getHeight());
+      SmartDashboard.putNumber("Targets X Value:", target.getX());
+      SmartDashboard.putNumber("Targets Y Value", target.getY());
+      SmartDashboard.putNumber("Targets Width:", target.getWidth());
+      SmartDashboard.putNumber("Targets Height", target.getHeight());
     }
+
+    drive.updatePIDValues();
+    drive.displayPIDValues();
+    drive.displayMotorControllerInputs();
   }
 
   /**
@@ -104,7 +104,6 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    drive.initPID(1/200, 0, 0);
   }
 
   /** This function is called periodically during operator control. */
@@ -119,14 +118,10 @@ public class Robot extends TimedRobot {
       drive.XboxDrive();
     }
 
+    // Reset drive PID when leaving autopilot
     if (OI.driveController.getAButtonReleased()) {
-      // Reset drive PID when leaving autopilot
       drive.resetPID();
     }
-
-    drive.displayMotorControllerInfo();
-    drive.PIDAtSetpoint();
-    drive.displayPIDValues();
   }
 
   /** This function is called once when the robot is disabled. */

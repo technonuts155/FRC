@@ -1,0 +1,6 @@
+[NetworkTables Storage 3.0]
+string "/Preferences/.type"="RobotPreferences"
+double "/Preferences/drivePID Tolerance"=10
+double "/Preferences/drivePID kD"=0
+double "/Preferences/drivePID kI"=0
+double "/Preferences/drivePID kP"=0.05
