@@ -38,10 +38,19 @@ public class Drive {
     // Pixycam
     private Pixy2 pixy;
     private final double HORIZONTAL_CENTER = 157.5;
-    private PIDController drivePID = new PIDController(0, 0, 0);
+    private PIDController drivePID = new PIDController(1/200, 0, 0);
 
+    public void initPID (double kP, double kI, double kD) {
+        drivePID.setP(kP);
+        drivePID.setI(kI);
+        drivePID.setD(kD);
+    }
     public void resetPID() {
         drivePID.reset();
+    }
+
+    public void setPIDSetpoint(double setpoint) {
+        drivePID.setSetpoint(setpoint);
     }
 
     public void setPIDTolerance(double tolerance) {
@@ -50,12 +59,6 @@ public class Drive {
 
     private double getBlockCenterX(Block block) {
         return (block.getX() + (block.getWidth()/2));
-    }
-
-    private void updatePIDConstants() {
-        drivePID.setP(SmartDashboard.getNumber("m_kp:", 0));
-        drivePID.setI(SmartDashboard.getNumber("m_ki:", 0));
-        drivePID.setD(SmartDashboard.getNumber("m_kd:", 0));
     }
 
     public double getAreaOfBlock(Block block) {
@@ -135,12 +138,25 @@ public class Drive {
     public void pixyAutopilot() {
         Block target = getTargetBlock();
 
-        updatePIDConstants();
+        if (target != null) {
+            double turnRate = drivePID.calculate(getBlockCenterX(target), HORIZONTAL_CENTER);
+            SmartDashboard.putNumber("Error", getBlockCenterX(target) - HORIZONTAL_CENTER);
+            SmartDashboard.putNumber("Turn rate", turnRate);
+            drivetrain.arcadeDrive(0, turnRate);
+        } else {
+            drivetrain.arcadeDrive(0, 0);
+        }
 
-        double turnRate = drivePID.calculate(getBlockCenterX(target), HORIZONTAL_CENTER);
+    }
 
-        drivetrain.arcadeDrive(0, turnRate);
+    public void PIDAtSetpoint() {
+        SmartDashboard.putBoolean("At setpoint", drivePID.atSetpoint());
+    }
 
+    public void displayPIDValues() {
+        SmartDashboard.putNumber("P", drivePID.getP());
+        SmartDashboard.putNumber("I", drivePID.getI());
+        SmartDashboard.putNumber("D", drivePID.getD());
     }
 
     public void XboxDrive() {
@@ -171,12 +187,14 @@ public class Drive {
     public void displayMotorControllerInfo() {
 
         // Displays output currents for each speed controller on dashboard
+        /*
         SmartDashboard.putNumber("Left Drive 1, Current", leftMotor1.getOutputCurrent());
         SmartDashboard.putNumber("Left Drive 2, Current", leftMotor2.getOutputCurrent());
         SmartDashboard.putNumber("Left Drive 3, Current", leftMotor3.getOutputCurrent());
         SmartDashboard.putNumber("Right Drive 1, Current", rightMotor1.getOutputCurrent());
         SmartDashboard.putNumber("Right Drive 2, Current", rightMotor2.getOutputCurrent());
         SmartDashboard.putNumber("Right Drive 3, Current", rightMotor3.getOutputCurrent());
+        */
 
         SmartDashboard.putNumber("Left Drive 1, Input", leftMotor1.get());
         SmartDashboard.putNumber("Left Drive 2, Input", leftMotor2.get());

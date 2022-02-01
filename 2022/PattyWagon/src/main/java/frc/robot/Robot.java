@@ -41,8 +41,9 @@ public class Robot extends TimedRobot {
     drive.initializePixy();
 
     // Reset autopilot PID and set tolerance
-    drive.resetPID();
+    //drive.resetPID();
     drive.setPIDTolerance(10);        // Units in pixels
+    drive.setPIDSetpoint(315/2);      // Horizontal center of pixy resolution
 
   
     // Start camera stream for dashboard
@@ -66,7 +67,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Targets Y Value", target.getY());
     SmartDashboard.putNumber("Targets Width:", target.getWidth());
     SmartDashboard.putNumber("Targets Height", target.getHeight());
-
     }
   }
 
@@ -103,7 +103,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    drive.initPID(1/200, 0, 0);
+  }
 
   /** This function is called periodically during operator control. */
   @Override
@@ -121,6 +123,10 @@ public class Robot extends TimedRobot {
       // Reset drive PID when leaving autopilot
       drive.resetPID();
     }
+
+    drive.displayMotorControllerInfo();
+    drive.PIDAtSetpoint();
+    drive.displayPIDValues();
   }
 
   /** This function is called once when the robot is disabled. */
