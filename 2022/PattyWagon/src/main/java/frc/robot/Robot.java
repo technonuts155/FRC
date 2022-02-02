@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -22,6 +24,8 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  private WPI_TalonSRX intake = new WPI_TalonSRX(2);
 
   Drive drive = new Drive();
 
@@ -65,7 +69,7 @@ public class Robot extends TimedRobot {
       SmartDashboard.putNumber("Targets Height", target.getHeight());
     }
 
-    // drive.updatePIDValues();
+    drive.updatePIDValues();
     drive.displayPIDValues();
     drive.displayMotorControllerInputs();
   }
@@ -114,8 +118,10 @@ public class Robot extends TimedRobot {
     // Normal drive otherwise
     if (OI.driveController.getAButton()) {
       drive.pixyAutopilot();
+      intake.set(-1);
     } else {
       drive.XboxDrive();
+      intake.set(0);
     }
 
     // Reset drive PID when leaving autopilot
