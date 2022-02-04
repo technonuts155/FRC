@@ -7,7 +7,6 @@ public class RobotMap {
     public static int leftMotor2 = 2;
     public static int leftMotor3 = 3;
     public static int rightMotor1 = 13;
-    //mouse ha SNEAKY
     public static int rightMotor2 = 14;
     public static int rightMotor3 = 15;
 }

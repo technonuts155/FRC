@@ -47,6 +47,10 @@ public class Robot extends TimedRobot {
   
     // Start camera stream for dashboard
     CameraServer.startAutomaticCapture();
+
+    // INit pixycam pid setpoint and tolerance
+    drive.setPIDSetpoint(190);
+    drive.setPIDTolerance(5);
   }
 
   /**
@@ -68,10 +72,6 @@ public class Robot extends TimedRobot {
       SmartDashboard.putNumber("Targets Width:", target.getWidth());
       SmartDashboard.putNumber("Targets Height", target.getHeight());
     }
-
-    drive.updatePIDValues();
-    drive.displayPIDValues();
-    drive.displayMotorControllerInputs();
   }
 
   /**
@@ -116,7 +116,7 @@ public class Robot extends TimedRobot {
 
     // Autopilot with pixycam while A button is held
     // Normal drive otherwise
-    if (OI.driveController.getAButton()) {
+    if (OI.driveController.getRawButton(10)) {
       drive.pixyAutopilot();
       intake.set(-1);
     } else {
@@ -125,7 +125,7 @@ public class Robot extends TimedRobot {
     }
 
     // Reset drive PID when leaving autopilot
-    if (OI.driveController.getAButtonReleased()) {
+    if (OI.driveController.getRawButtonReleased(10)) {
       drive.resetPID();
     }
   }

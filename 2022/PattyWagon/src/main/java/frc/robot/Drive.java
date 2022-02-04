@@ -35,7 +35,7 @@ public class Drive {
     private final double HORIZONTAL_CENTER = 157.5;
 
     // PIDController for centering on target found by pixycam
-    private PIDController drivePID = new PIDController(0.015, 0.01, 0.0015);
+    private PIDController drivePID = new PIDController(0.0, 0.0, 0.0);
 
     public void resetPID() {
         drivePID.reset();
@@ -44,9 +44,9 @@ public class Drive {
     // Used for tuning the PID
     // Pulls numbers from the Preferences box of the Smartdashboard
     public void updatePIDValues() {
-        drivePID.setP(Preferences.getDouble("drivePID kP", 0.015));
-        drivePID.setI(Preferences.getDouble("drivePID kI", 0.01));
-        drivePID.setD(Preferences.getDouble("drivePID kD", 0.0015));
+        drivePID.setP(Preferences.getDouble("drivePID kP", 0.0));
+        drivePID.setI(Preferences.getDouble("drivePID kI", 0.0));
+        drivePID.setD(Preferences.getDouble("drivePID kD", 0.0));
         drivePID.setTolerance(Preferences.getDouble("drivePID Tolerance", 10));
         drivePID.setSetpoint(Preferences.getDouble("drivePID Setpoint", 157.5));
     }
@@ -148,14 +148,13 @@ public class Drive {
         Block target = getTargetBlock();
 
         if (target != null) {
-            double turnRate = drivePID.calculate(getBlockCenterX(target), HORIZONTAL_CENTER);
+            double turnRate = drivePID.calculate(getBlockCenterX(target));
             SmartDashboard.putNumber("Error", getBlockCenterX(target) - HORIZONTAL_CENTER);
             SmartDashboard.putNumber("Turn rate", turnRate);
-            drivetrain.arcadeDrive(.75, turnRate * -1);
+            drivetrain.arcadeDrive(OI.driveController.getRightTriggerAxis(), turnRate * -1);
         } else {
-            drivetrain.arcadeDrive(.75, 0);
+            drivetrain.arcadeDrive(OI.driveController.getRightTriggerAxis(), 0);
         }
-
     }
 
     public void PIDAtSetpoint() {
