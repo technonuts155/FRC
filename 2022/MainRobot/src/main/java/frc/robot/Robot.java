@@ -123,13 +123,18 @@ public class Robot extends TimedRobot {
       shooter.indexStop();
     }
 
-    //Shooter control
-    if (OI.shootHigh()) {
-      shooter.setShooterRPM(Shooter.RPM.kHigh); 
-    } else if (OI.shootLow()) {
-      shooter.setShooterRPM(Shooter.RPM.kLow);
+    // Shooter control
+    // Shooter speed is controlled by operator when override button is held, PIDController otherwise
+    if (OI.shooterManualOverride()) {
+      shooter.setShooterPercentOutput(OI.shooterThrottle());
     } else {
-      shooter.setShooterRPM(Shooter.RPM.kStop);
+      if (OI.shootHigh()) {
+        shooter.setShooterRPM(Shooter.RPM.kHigh); 
+      } else if (OI.shootLow()) {
+        shooter.setShooterRPM(Shooter.RPM.kLow);
+      } else {
+        shooter.setShooterRPM(Shooter.RPM.kStop);
+      }
     }
   }
 

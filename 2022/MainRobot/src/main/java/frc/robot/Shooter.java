@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class Shooter {
 
     // Control states for the shooter flywheel
-    enum RPM { //black magic voodoo enum
+    enum RPM {      //black magic voodoo enum
         kHigh,      // Aim for high goal
         kLow,       // Aim for low goal
         kStop       // Stop motor
@@ -45,6 +45,10 @@ public class Shooter {
     //Beam Break
     DigitalInput beamBreak = new DigitalInput(RobotMap.BEAM_BREAK);
 
+    public void setShooterPercentOutput(double output) {
+        shooterMotor.set(output);
+    }
+
     // PID functions
     public void initPID() {
         pid = shooterMotor.getPIDController();
@@ -66,7 +70,7 @@ public class Shooter {
     }
     
     public void initalizeEncoder() {
-        shooterEncoder = shooterMotor.getAlternateEncoder(SparkMaxAlternateEncoder.Type.kQuadrature, 8192);
+        shooterEncoder = shooterMotor.getAlternateEncoder(42);
     }
 
     public double getShooterRPM() {

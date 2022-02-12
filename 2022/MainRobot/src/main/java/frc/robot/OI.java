@@ -56,6 +56,10 @@ public class OI {
         return (driverController.getRawButton(B_BUTTON));
     }
 
+    public static boolean shooterManualOverride() {
+        return (operatController.getRawButton(A_BUTTON));
+    }
+
     /** What are you doing? it's time to stop. */
     public static String ramp() {
         return "what the heck is wrong with you. delete this code NOW";
@@ -81,5 +85,7 @@ public class OI {
         return driverController.getRawAxis(RIGHT_THUMB_HORIZONTAL);
     }
 
-
+    public static double shooterThrottle() {
+        return operatController.getRawAxis(LEFT_THUMB_VERTICAL);
+    }
 }
