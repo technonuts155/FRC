@@ -51,6 +51,8 @@ public class Drive {
         drivePID.setSetpoint(Preferences.getDouble("drivePID Setpoint", 157.5));
     }
 
+    
+
     public void setPIDSetpoint(double setpoint) {
         drivePID.setSetpoint(setpoint);
     }
@@ -151,9 +153,9 @@ public class Drive {
             double turnRate = drivePID.calculate(getBlockCenterX(target));
             SmartDashboard.putNumber("Error", getBlockCenterX(target) - HORIZONTAL_CENTER);
             SmartDashboard.putNumber("Turn rate", turnRate);
-            drivetrain.arcadeDrive(OI.driverController.getRightTriggerAxis(), turnRate * -1);
+            drivetrain.arcadeDrive(OI.driveThrottle(), turnRate * -1);
         } else {
-            drivetrain.arcadeDrive(OI.driverController.getRightTriggerAxis(), 0);
+            drivetrain.arcadeDrive(OI.driveThrottle(), 0);
         }
     }
 
@@ -170,10 +172,8 @@ public class Drive {
     public void XboxDrive() {
 
         // Read controller values
-        double rightTriggerAxis = OI.driverController.getRightTriggerAxis();
-        double leftTriggerAxis = OI.driverController.getLeftTriggerAxis();
-        double speed = rightTriggerAxis - leftTriggerAxis;
-        double rotation = OI.driverController.getRawAxis(4);
+        double speed = OI.driveThrottle();
+        double rotation = OI.driveRotation();
 
         // Square Inputs, keep values negative if they should be
         if (speed < 0) {
@@ -189,7 +189,7 @@ public class Drive {
         }
 
         // Give values to motor controllers
-        drivetrain.arcadeDrive(speed, rotation * .75);
+        drivetrain.arcadeDrive(speed, rotation);
     }
 
     public void displayMotorControllerOutputCurrents() {

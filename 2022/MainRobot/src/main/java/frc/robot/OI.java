@@ -26,20 +26,39 @@ public class OI {
     public static final int LEFT_THUMB_VERTICAL = 1;
     public static final int RIGHT_THUMB_HORIZONTAL = 4;
     public static final int RIGHT_THUMB_VERTICAL = 5;
+    public static final int RIGHT_ANALOG_TRIGGER = 3;
+    public static final int LEFT_ANALOG_TRIGGER = 2;
     
 
 
     // Get button functions
-    public static boolean manualIntake() {
+    public static boolean manualForwardsIntake() {
         return operatController.getRawButton(B_BUTTON);
     }
 
-    public static boolean shoot() {
-        return operatController.getRawButton(A_BUTTON);
+    public static boolean manualReverseIntake() {
+        return operatController.getRawButton(X_BUTTON);
     }
+
+    public static boolean shootLow() { 
+        return (operatController.getRightTriggerAxis() > .5 || operatController.getLeftTriggerAxis() > .5);
+    }
+
+    public static boolean shootHigh() { 
+        return (operatController.getRightTriggerAxis() > .5 && operatController.getLeftTriggerAxis() > .5);
+     }
 
     public static boolean hang() {
         return false;
+    }
+
+    public static boolean pixyAutopilot() {
+        return (driverController.getRawButton(B_BUTTON));
+    }
+
+    /** What are you doing? it's time to stop. */
+    public static String ramp() {
+        return "what the heck is wrong with you. delete this code NOW";
     }
 
     public static boolean moveIndexDown() {

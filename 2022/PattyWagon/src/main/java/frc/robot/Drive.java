@@ -31,7 +31,6 @@ public class Drive {
         rightMotors.setInverted(true);
     }
 
-
     private void speedLimitControl() {
         if(OI.driveController.getAButtonPressed() == true && speedLimit > 0.1) {
             speedLimit = speedLimit - 0.1;
@@ -44,11 +43,12 @@ public class Drive {
 
     public void XboxDrive() {
 
-        // Read controller values
         speedLimitControl();
+
+        // Read controller values
         double rightTriggerAxis = OI.driveController.getRightTriggerAxis();
         double leftTriggerAxis = OI.driveController.getLeftTriggerAxis();
-        double speed = rightTriggerAxis - leftTriggerAxis;
+        double speed = OI.driveController.getRawAxis(1) * -1;
         double rotation = OI.driveController.getRawAxis(4);
 
         // Square Inputs, keep values negative if they should be

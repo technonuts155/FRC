@@ -20,6 +20,9 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  Shooter shooter = new Shooter();
+  Drive drive = new Drive();
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -29,6 +32,14 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    // Initalized the PixyDrivePID
+    drive.initializePixy();
+
+    // initalized shooterPid
+    shooter.initPID();
+
+    
   }
 
   /**
@@ -78,7 +89,30 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+    // Drive control
+    if (OI.pixyAutopilot() == true) {
+      drive.pixyAutopilot();
+    } else {
+      drive.XboxDrive();
+      drive.resetPID();     // Reset PID during manual drive to prevent integral build-up
+    }
+
+    // Cargo intake control
+    if (OI.manualForwardsIntake() == true || OI.pixyAutopilot() == true) {
+      shooter.intakeForwards();
+    } else if (OI.manualReverseIntake() == true) {
+      shooter.intakeReverse();
+    } else {
+      shooter.intakeStop();
+    }
+
+    // Cargo index control
+    if (shooter.getBeamBreak() == true && shooter.getIntakeSpeed() == 1) {
+      shooter.indexForwards();
+    }
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
