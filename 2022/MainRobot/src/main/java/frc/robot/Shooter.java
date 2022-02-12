@@ -5,8 +5,6 @@ import java.util.Set;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.fasterxml.jackson.databind.util.EnumValues;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
@@ -14,16 +12,13 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
-
 
 
 public class Shooter {
 
     // Control states for the shooter flywheel
-    enum RPM {
+    enum RPM { //black magic voodoo enum
         kHigh,      // Aim for high goal
         kLow,       // Aim for low goal
         kStop       // Stop motor
@@ -98,7 +93,7 @@ public class Shooter {
 
             case kStop:
                 pid.setReference(STOP, ControlType.kVelocity);
-                upToSpeed = Math.abs(STOP - shooterEncoder.getVelocity()) <= tolerance;
+                upToSpeed = false;
                 break;
         }
     } 

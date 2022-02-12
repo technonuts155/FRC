@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import javax.lang.model.util.ElementScanner6;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -111,6 +113,23 @@ public class Robot extends TimedRobot {
     // Cargo index control
     if (shooter.getBeamBreak() == true && shooter.getIntakeSpeed() == 1) {
       shooter.indexForwards();
+    } else if (shooter.isUpToSpeed()) {
+      shooter.indexForwards();
+    } else if (OI.moveIndexDown()) {
+      shooter.indexBackwards();
+    } else if (OI.moveIndexUp()) {
+      shooter.indexForwards();
+    } else {
+      shooter.indexStop();
+    }
+
+    //Shooter control
+    if (OI.shootHigh()) {
+      shooter.setShooterRPM(Shooter.RPM.kHigh); 
+    } else if (OI.shootLow()) {
+      shooter.setShooterRPM(Shooter.RPM.kLow);
+    } else {
+      shooter.setShooterRPM(Shooter.RPM.kStop);
     }
   }
 
