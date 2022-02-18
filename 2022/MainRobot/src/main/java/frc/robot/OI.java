@@ -18,10 +18,10 @@ public class OI {
     public static final int START_BUTTON = 8;
     public static final int LEFT_STICK_PRESS_BUTTON = 9;
     public static final int RIGHT_STICK_PRESS_BUTTON = 10;
-    public static final int D_PAD_UP = operatController.getPOV(0);
-    public static final int D_PAD_RIGHT = operatController.getPOV(90);
-    public static final int D_PAD_DOWN = operatController.getPOV(180);
-    public static final int D_PAD_LEFT = operatController.getPOV(270);
+    public static final int D_PAD_UP = 0;
+    public static final int D_PAD_RIGHT = 90;
+    public static final int D_PAD_DOWN = 180;
+    public static final int D_PAD_LEFT = 270;
     public static final int LEFT_THUMB_HORIZONTAL = 0;
     public static final int LEFT_THUMB_VERTICAL = 1;
     public static final int RIGHT_THUMB_HORIZONTAL = 4;
@@ -53,11 +53,11 @@ public class OI {
     }
 
     public static boolean pixyAutopilot() {
-        return (driverController.getRawButton(B_BUTTON));
+        return (driverController.getLeftTriggerAxis() >= 0.5);
     }
 
     public static boolean shooterManualOverride() {
-        return (operatController.getRawButton(A_BUTTON));
+        return (operatController.getRawButton(START_BUTTON));
     }
 
     /** What are you doing? it's time to stop. */
@@ -66,11 +66,11 @@ public class OI {
     }
 
     public static boolean moveIndexDown() {
-        return operatController.getRawButton(Y_BUTTON) == true && operatController.getPOV() == D_PAD_DOWN;
+        return operatController.getRawButton(A_BUTTON);
     }
 
     public static boolean moveIndexUp() {
-        return operatController.getRawButton(Y_BUTTON) == true && operatController.getPOV() == D_PAD_UP;
+        return operatController.getRawButton(Y_BUTTON);
     }
 
     public static boolean collectionAssist() {
@@ -78,11 +78,11 @@ public class OI {
     }
 
     public static double driveThrottle() {
-        return driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis();
+        return driverController.getRawAxis(RIGHT_THUMB_VERTICAL);
     }
 
     public static double driveRotation() {
-        return driverController.getRawAxis(RIGHT_THUMB_HORIZONTAL);
+        return driverController.getRawAxis(LEFT_THUMB_HORIZONTAL);
     }
 
     public static double shooterThrottle() {

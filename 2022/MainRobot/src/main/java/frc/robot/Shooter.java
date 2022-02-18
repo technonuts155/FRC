@@ -4,7 +4,8 @@ package frc.robot;
 import java.util.Set;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
@@ -26,8 +27,8 @@ public class Shooter {
 
     // Motor Controllers
     private CANSparkMax shooterMotor = new CANSparkMax(RobotMap.SHOOTER_MOTOR, MotorType.kBrushless);
-    private TalonSRX indexerMotor = new TalonSRX(RobotMap.INDEXER_MOTOR);
-    private TalonSRX intakeMotor = new TalonSRX(RobotMap.INTAKE_MOTOR);
+    private VictorSPX indexerMotor = new VictorSPX(RobotMap.INDEXER_MOTOR);
+    private VictorSPX intakeMotor = new VictorSPX(RobotMap.INTAKE_MOTOR);
 
     // PID Controller and Encoder for controlling the shooter motor
     private SparkMaxPIDController pid;
@@ -82,7 +83,6 @@ public class Shooter {
     }
     
     public void setShooterRPM(Shooter.RPM rpm) {
-
         // Set RPM reference and update upToSpeed boolean
         switch (rpm) {
             case kHigh:
@@ -98,6 +98,9 @@ public class Shooter {
             case kStop:
                 pid.setReference(STOP, ControlType.kVelocity);
                 upToSpeed = false;
+                break;
+            
+            default:
                 break;
         }
     } 

@@ -38,10 +38,12 @@ public class Robot extends TimedRobot {
     // Initalized the PixyDrivePID
     drive.initializePixy();
 
-    // initalized shooterPid
-    shooter.initPID();
+    // Right Drive motors need to be inverted manually now
+    drive.invertRightDriveMotors();
 
-    
+    // initalized shooterPid
+    // shooter.initPID();
+  
   }
 
   /**
@@ -152,5 +154,29 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    if(OI.manualForwardsIntake()) {
+      shooter.intakeForwards();
+    } else if(OI.manualReverseIntake()) {
+      shooter.intakeReverse();
+    } else {
+      shooter.intakeStop();
+    }
+    //SmartDashboard.putNumber("key", value);
+    if(OI.moveIndexUp()) {
+      shooter.indexForwards();
+    } else if(OI.moveIndexUp()) {
+      shooter.indexBackwards();
+    } else {
+      shooter.indexStop();
+    }
+    //SmartDashboard.putNumber("key", value);
+    shooter.setShooterPercentOutput(OI.shooterThrottle());
+
+    // Calling getShooterRPM currently crashes the code
+    //SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
+
+    drive.XboxDrive();
+
+  }
 }

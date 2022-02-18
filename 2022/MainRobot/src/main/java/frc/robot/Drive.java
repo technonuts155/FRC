@@ -10,7 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.pseudoresonance.pixy2api.Pixy2;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 import io.github.pseudoresonance.pixy2api.links.SPILink;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 
 import java.util.ArrayList;
@@ -18,10 +21,12 @@ import java.util.ArrayList;
 public class Drive {
     // Motor time
     
-    private WPI_TalonSRX leftMotor1 = new WPI_TalonSRX(RobotMap.LEFT_DRIVE_1);
-    private WPI_TalonSRX leftMotor2 = new WPI_TalonSRX(RobotMap.LEFT_DRIVE_2);
-    private WPI_TalonSRX rightMotor1 = new WPI_TalonSRX(RobotMap.RIGHT_DRIVE_1);
-    private WPI_TalonSRX rightMotor2 = new WPI_TalonSRX(RobotMap.RIGHT_DRIVE_2);
+    private WPI_VictorSPX leftMotor1 = new WPI_VictorSPX(RobotMap.LEFT_DRIVE_1);
+    private WPI_VictorSPX leftMotor2 = new WPI_VictorSPX(RobotMap.LEFT_DRIVE_2);
+    private WPI_VictorSPX rightMotor1 = new WPI_VictorSPX(RobotMap.RIGHT_DRIVE_1);
+    private WPI_VictorSPX rightMotor2 = new WPI_VictorSPX(RobotMap.RIGHT_DRIVE_2);
+
+    
 
     // Group left and right motors
     private MotorControllerGroup leftMotors = new MotorControllerGroup(leftMotor1, leftMotor2);
@@ -194,10 +199,10 @@ public class Drive {
 
     public void displayMotorControllerOutputCurrents() {
         // Displays output currents for each speed controller (in amps)
-        SmartDashboard.putNumber("Left Drive 1, Current", leftMotor1.getOutputCurrent());
-        SmartDashboard.putNumber("Left Drive 2, Current", leftMotor2.getOutputCurrent());
-        SmartDashboard.putNumber("Right Drive 1, Current", rightMotor1.getOutputCurrent());
-        SmartDashboard.putNumber("Right Drive 2, Current", rightMotor2.getOutputCurrent());
+        SmartDashboard.putNumber("Left Drive 1, Current", leftMotor1.get());
+        SmartDashboard.putNumber("Left Drive 2, Current", leftMotor2.get());
+        SmartDashboard.putNumber("Right Drive 1, Current", rightMotor1.get());
+        SmartDashboard.putNumber("Right Drive 2, Current", rightMotor2.get());
     }
 
     public void displayMotorControllerInputs() {
