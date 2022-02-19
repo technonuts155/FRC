@@ -163,19 +163,18 @@ public class Robot extends TimedRobot {
     } else {
       shooter.intakeStop();
     }
-    //SmartDashboard.putNumber("key", value);
+
     if(OI.moveIndexUp()) {
       shooter.indexForwards();
-    } else if(OI.moveIndexUp()) {
+    } else if(OI.moveIndexDown()) {
       shooter.indexBackwards();
     } else {
       shooter.indexStop();
     }
-    //SmartDashboard.putNumber("key", value);
+ 
     shooter.setShooterPercentOutput(OI.shooterThrottle());
 
-    // Calling getShooterRPM currently crashes the code
-    //SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
+    SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
 
     drive.XboxDrive();
 
