@@ -38,12 +38,12 @@ public class Robot extends TimedRobot {
     // Initalized the PixyDrivePID
     drive.initializePixy();
 
-    // Right Drive motors need to be inverted manually now
-    drive.invertRightDriveMotors();
+    // Drive motors need to be inverted manually now
+    drive.invertLeftDriveMotors();
 
-    // Initialize shooter PID and Encoder
-    shooter.initPID();
+    // Initialize shooter Encoder and PID
     shooter.initalizeEncoder();
+    shooter.initPID();
   
   }
 
@@ -55,7 +55,10 @@ public class Robot extends TimedRobot {
    * SmartDashboard integrated updating.
    */
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    shooter.updatePIDValues();
+    SmartDashboard.putNumber("Shooter Temp", shooter.getTemperature());
+  }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -96,6 +99,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    /** Temporary comment to ignore actual teleop code for testing
+     *
     // Drive control
     if (OI.pixyAutopilot() == true) {
       drive.pixyAutopilot();
@@ -139,6 +144,40 @@ public class Robot extends TimedRobot {
         shooter.setShooterRPM(Shooter.RPM.kStop);
       }
     }
+    */
+
+    if(OI.manualForwardsIntake()) {
+      shooter.intakeForwards();
+    } else if(OI.manualReverseIntake() || shooter.isUpToSpeed()) {
+      shooter.intakeReverse();
+    } else {
+      shooter.intakeStop();
+    }
+
+    if(OI.moveIndexUp() || shooter.isUpToSpeed()) {
+      shooter.indexForwards();
+    } else if(OI.moveIndexDown()) {
+      shooter.indexBackwards();
+    } else {
+      shooter.indexStop();
+    }
+ 
+    if (OI.shooterManualOverride()) {
+      shooter.setShooterPercentOutput(OI.shooterThrottle());
+    } else {
+      if (OI.shootHigh()) {
+        shooter.setShooterRPM(Shooter.RPM.kHigh); 
+      } else if (OI.shootLow()) {
+        shooter.setShooterRPM(Shooter.RPM.kLow);
+      } else {
+        shooter.setShooterPercentOutput(0);
+      }
+    }
+
+    SmartDashboard.putBoolean("Shooter at setpoint", shooter.isUpToSpeed());
+    SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
+
+    drive.XboxDrive();
   }
 
   /** This function is called once when the robot is disabled. */

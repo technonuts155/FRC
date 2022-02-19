@@ -35,12 +35,12 @@ public class Shooter {
     private RelativeEncoder shooterEncoder;
 
     // RPM setpoint constants for shooter control
-    private final double HIGH = 300.0;
-    private final double LOW = 100;
+    private final double HIGH = 3750.0;
+    private final double LOW = 2700.0;
     private final double STOP = 0;
 
     // Tolerance for shooter RPM and boolean for being within tolerance (shooter is up to speed)
-    private final double tolerance = 100;   
+    private final double tolerance = 75;   
     private boolean upToSpeed = false;
     
     //Beam Break
@@ -53,13 +53,14 @@ public class Shooter {
     // PID functions
     public void initPID() {
         pid = shooterMotor.getPIDController();
-        pid.setP(0);
+        pid.setP(0.0003);
         pid.setI(0);
         pid.setD(0);
         pid.setIZone(0);
-        pid.setFF(0);
+        pid.setFF(0.00019);
         pid.setOutputRange(-1, 1);
-        pid.setReference(0, CANSparkMax.ControlType.kVelocity);
+        pid.setFeedbackDevice(shooterEncoder);
+
     }
 
     public void updatePIDValues() {
@@ -71,7 +72,7 @@ public class Shooter {
     }
     
     public void initalizeEncoder() {
-        shooterEncoder = shooterMotor.getAlternateEncoder(42);
+        shooterEncoder = shooterMotor.getEncoder();
     }
 
     public double getShooterRPM() {
@@ -105,16 +106,20 @@ public class Shooter {
         }
     } 
 
+    public double getTemperature() {
+        return shooterMotor.getMotorTemperature();
+    }
+
     //Intake Functions
     public double getIntakeSpeed() {
         return intakeMotor.getMotorOutputPercent();
     }
     public void intakeForwards() {
-        intakeMotor.set(ControlMode.PercentOutput, 1);
+        intakeMotor.set(ControlMode.PercentOutput, 0.5);
     }
 
     public void intakeReverse() {
-        intakeMotor.set(ControlMode.PercentOutput, -1);
+        intakeMotor.set(ControlMode.PercentOutput, -0.5);
     }
 
     public void intakeStop() {
@@ -127,11 +132,11 @@ public class Shooter {
     }
 
     public void indexForwards() {
-        indexerMotor.set(ControlMode.PercentOutput, 1);
+        indexerMotor.set(ControlMode.PercentOutput, .8);
     }
 
     public void indexBackwards() {
-        indexerMotor.set(ControlMode.PercentOutput, -1);
+        indexerMotor.set(ControlMode.PercentOutput, -.8);
     }
    
     public void indexStop() {

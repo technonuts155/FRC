@@ -151,6 +151,10 @@ public class Drive {
         rightMotors.setInverted(true);
     }
 
+    public void invertLeftDriveMotors() {
+        leftMotors.setInverted(true);
+    }
+
     public void pixyAutopilot() {
         Block target = getTargetBlock();
 
@@ -194,7 +198,7 @@ public class Drive {
         }
 
         // Give values to motor controllers
-        drivetrain.arcadeDrive(speed, rotation);
+        drivetrain.arcadeDrive(speed, rotation * -1);
     }
 
     public void displayMotorControllerOutputCurrents() {
