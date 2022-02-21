@@ -53,7 +53,7 @@ public class OI {
     }
 
     public static boolean pixyAutopilot() {
-        return (driverController.getLeftTriggerAxis() >= 0.5);
+        return driverController.getLeftBumper();
     }
 
     public static boolean shooterManualOverride() {
@@ -78,11 +78,11 @@ public class OI {
     }
 
     public static double driveThrottle() {
-        return driverController.getRawAxis(RIGHT_THUMB_VERTICAL);
+        return (driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis()) * -1;
     }
 
     public static double driveRotation() {
-        return driverController.getRawAxis(LEFT_THUMB_HORIZONTAL);
+        return driverController.getRawAxis(RIGHT_THUMB_HORIZONTAL);
     }
 
     public static double shooterThrottle() {

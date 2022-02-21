@@ -9,6 +9,7 @@ import javax.lang.model.util.ElementScanner6;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -56,8 +57,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    shooter.updatePIDValues();
-    SmartDashboard.putNumber("Shooter Temp", shooter.getTemperature());
+    Block block = drive.getTargetBlock();
+    SmartDashboard.putBoolean("Target aquired", block != null);
   }
 
   /**
@@ -86,7 +87,8 @@ public class Robot extends TimedRobot {
         break;
       case kDefaultAuto:
       default:
-        // Put default auto code here
+        drive.pixyAutopilot(-.75);
+        shooter.intakeReverse();
         break;
     }
   }
@@ -99,16 +101,17 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    /** Temporary comment to ignore actual teleop code for testing
-     *
+ 
     // Drive control
     if (OI.pixyAutopilot() == true) {
-      drive.pixyAutopilot();
+      drive.pixyAutopilot(OI.driveThrottle());
     } else {
       drive.XboxDrive();
       drive.resetPID();     // Reset PID during manual drive to prevent integral build-up
     }
 
+       /** Temporary comment to ignore actual teleop code for testing
+     *
     // Cargo intake control
     if (OI.manualForwardsIntake() == true || OI.pixyAutopilot() == true) {
       shooter.intakeForwards();
@@ -176,8 +179,6 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putBoolean("Shooter at setpoint", shooter.isUpToSpeed());
     SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
-
-    drive.XboxDrive();
   }
 
   /** This function is called once when the robot is disabled. */
