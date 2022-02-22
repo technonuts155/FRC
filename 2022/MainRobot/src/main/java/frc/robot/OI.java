@@ -32,11 +32,11 @@ public class OI {
 
 
     // Get button functions
-    public static boolean manualForwardsIntake() {
+    public static boolean intakeOut() {
         return operatController.getRawButton(B_BUTTON);
     }
 
-    public static boolean manualReverseIntake() {
+    public static boolean intakeIn() {
         return operatController.getRawButton(X_BUTTON);
     }
 
@@ -78,7 +78,7 @@ public class OI {
     }
 
     public static double driveThrottle() {
-        return (driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis()) * -1;
+        return driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis();
     }
 
     public static double driveRotation() {

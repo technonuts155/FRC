@@ -114,11 +114,11 @@ public class Shooter {
     public double getIntakeSpeed() {
         return intakeMotor.getMotorOutputPercent();
     }
-    public void intakeForwards() {
+    public void intakeOut() {
         intakeMotor.set(ControlMode.PercentOutput, 0.5);
     }
 
-    public void intakeReverse() {
+    public void intakeIn() {
         intakeMotor.set(ControlMode.PercentOutput, -0.5);
     }
 

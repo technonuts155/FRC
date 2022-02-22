@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
     drive.initializePixy();
 
     // Drive motors need to be inverted manually now
-    drive.invertLeftDriveMotors();
+    drive.invertRightDriveMotors();
 
     // Initialize shooter Encoder and PID
     shooter.initalizeEncoder();
@@ -87,8 +87,8 @@ public class Robot extends TimedRobot {
         break;
       case kDefaultAuto:
       default:
-        drive.pixyAutopilot(-.75);
-        shooter.intakeReverse();
+        drive.pixyAutopilot(.75);
+        shooter.intakeIn();
         break;
     }
   }
@@ -101,62 +101,23 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
- 
     // Drive control
     if (OI.pixyAutopilot() == true) {
       drive.pixyAutopilot(OI.driveThrottle());
     } else {
       drive.XboxDrive();
-      drive.resetPID();     // Reset PID during manual drive to prevent integral build-up
     }
 
-       /** Temporary comment to ignore actual teleop code for testing
-     *
-    // Cargo intake control
-    if (OI.manualForwardsIntake() == true || OI.pixyAutopilot() == true) {
-      shooter.intakeForwards();
-    } else if (OI.manualReverseIntake() == true) {
-      shooter.intakeReverse();
+    // Intake Control
+    if(OI.intakeOut()) {
+      shooter.intakeOut();
+    } else if(OI.intakeIn() || shooter.isUpToSpeed()) {
+      shooter.intakeIn();
     } else {
       shooter.intakeStop();
     }
 
-    // Cargo index control
-    if (shooter.getBeamBreak() == true && shooter.getIntakeSpeed() == 1) {
-      shooter.indexForwards();
-    } else if (shooter.isUpToSpeed()) {
-      shooter.indexForwards();
-    } else if (OI.moveIndexDown()) {
-      shooter.indexBackwards();
-    } else if (OI.moveIndexUp()) {
-      shooter.indexForwards();
-    } else {
-      shooter.indexStop();
-    }
-
-    // Shooter control
-    // Shooter speed is controlled by operator when override button is held, PIDController otherwise
-    if (OI.shooterManualOverride()) {
-      shooter.setShooterPercentOutput(OI.shooterThrottle());
-    } else {
-      if (OI.shootHigh()) {
-        shooter.setShooterRPM(Shooter.RPM.kHigh); 
-      } else if (OI.shootLow()) {
-        shooter.setShooterRPM(Shooter.RPM.kLow);
-      } else {
-        shooter.setShooterRPM(Shooter.RPM.kStop);
-      }
-    }
-    */
-
-    if(OI.manualForwardsIntake()) {
-      shooter.intakeForwards();
-    } else if(OI.manualReverseIntake() || shooter.isUpToSpeed()) {
-      shooter.intakeReverse();
-    } else {
-      shooter.intakeStop();
-    }
-
+    // Indexer control
     if(OI.moveIndexUp() || shooter.isUpToSpeed()) {
       shooter.indexForwards();
     } else if(OI.moveIndexDown()) {
@@ -165,6 +126,7 @@ public class Robot extends TimedRobot {
       shooter.indexStop();
     }
  
+    // Shooter control
     if (OI.shooterManualOverride()) {
       shooter.setShooterPercentOutput(OI.shooterThrottle());
     } else {
@@ -173,7 +135,7 @@ public class Robot extends TimedRobot {
       } else if (OI.shootLow()) {
         shooter.setShooterRPM(Shooter.RPM.kLow);
       } else {
-        shooter.setShooterPercentOutput(0);
+        shooter.setShooterRPM(Shooter.RPM.kStop);;
       }
     }
 
@@ -196,27 +158,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    if(OI.manualForwardsIntake()) {
-      shooter.intakeForwards();
-    } else if(OI.manualReverseIntake()) {
-      shooter.intakeReverse();
-    } else {
-      shooter.intakeStop();
-    }
-
-    if(OI.moveIndexUp()) {
-      shooter.indexForwards();
-    } else if(OI.moveIndexDown()) {
-      shooter.indexBackwards();
-    } else {
-      shooter.indexStop();
-    }
- 
-    shooter.setShooterPercentOutput(OI.shooterThrottle());
-
-    SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
-
-    drive.XboxDrive();
 
   }
 }
