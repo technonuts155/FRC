@@ -5,11 +5,12 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -36,6 +37,9 @@ public class Robot extends TimedRobot {
 
     // Differential drive no longer inverts right motors by default as of 2022
     drive.invertRightDriveMotors();
+
+    // Initialize Pixycam
+    drive.initializePixy();
   
     // Start camera stream for dashboard
     CameraServer.startAutomaticCapture();
@@ -50,7 +54,21 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("D-pad value", OI.driveController.getPOV());
+
+    Block target = drive.getTargetBlock();
+    // Show on dashboard how many blue targets are found
+    SmartDashboard.putBoolean("Block found", target != null);
+
+    if(target != null) {
+      SmartDashboard.putNumber("Targets X Value:", target.getX());
+      SmartDashboard.putNumber("Targets Y Value", target.getY());
+      SmartDashboard.putNumber("Targets Width:", target.getWidth());
+      SmartDashboard.putNumber("Targets Height", target.getHeight());
+    }
+
+    // drive.updatePIDValues();
+    drive.displayPIDValues();
+    drive.displayMotorControllerInputs();
 
   }
 
@@ -87,13 +105,25 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+  }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
 
-    drive.XboxDrive();
+    // Autopilot with pixycam while A button is held
+    // Normal drive otherwise
+    if (OI.driveController.getAButton()) {
+      drive.pixyAutopilot();
+    } else {
+      drive.XboxDrive();
+    }
+
+    // Reset drive PID when leaving autopilot
+    if (OI.driveController.getAButtonReleased()) {
+      drive.resetPID();
+    }
   }
 
   /** This function is called once when the robot is disabled. */

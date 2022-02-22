@@ -1,0 +1,98 @@
+<xml version="1.0">
+<dashboard>
+	<widget field="Right Drive 3, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="192"/>
+	</widget>
+	<widget field="Right Drive 2, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="171"/>
+	</widget>
+	<widget field="Left Drive 3, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="150"/>
+	</widget>
+	<widget field="Left Drive 2, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="129"/>
+	</widget>
+	<widget field="D" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="108"/>
+	</widget>
+	<widget field="I" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="87"/>
+	</widget>
+	<widget field="P" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="66"/>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Label">
+		<location x="298" y="388"/>
+		<property name="Text" value="Right Motors Input"/>
+	</static-widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Label">
+		<location x="95" y="385"/>
+		<property name="Text" value="Left Motors Input"/>
+	</static-widget>
+	<widget field="Right Drive 1, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.SimpleDial">
+		<location x="218" y="236"/>
+		<property name="Upper Limit" value="1.0"/>
+		<property name="Lower Limit" value="-1.0"/>
+		<property name="Tick Interval" value="0.2"/>
+	</widget>
+	<widget field="Left Drive 1, Input" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.SimpleDial">
+		<location x="12" y="234"/>
+		<property name="Upper Limit" value="1.0"/>
+		<property name="Lower Limit" value="-1.0"/>
+		<property name="Tick Interval" value="0.2"/>
+	</widget>
+	<widget field="Block found" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="757" y="6"/>
+		<width>110</width>
+		<height>49</height>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.ConnectionIndicator">
+		<location x="1" y="0"/>
+	</static-widget>
+	<widget field="Ratio Blocks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="605" y="74"/>
+	</widget>
+	<widget field="Color Blocks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="607" y="50"/>
+	</widget>
+	<widget field="All blocks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="621" y="28"/>
+	</widget>
+	<widget field="Blocks Found" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="603" y="6"/>
+	</widget>
+	<widget field="Auto choices" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="34" y="-1"/>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.RobotPreferences">
+		<location x="473" y="235"/>
+	</static-widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
+		<location x="804" y="25"/>
+		<width>521</width>
+		<height>390</height>
+		<property name="Camera Choice" value=""/>
+	</static-widget>
+</dashboard>
+<live-window>
+	<widget field="Ungrouped" type="LW Subsystem" class="edu.wpi.first.smartdashboard.livewindow.elements.LWSubsystem">
+		<widget field="PIDController[1]" type="Table" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
+			<location x="0" y="0"/>
+			<height>0</height>
+			<width>0</width>
+		</widget>
+		<widget field="PIDController[1]" type="Table" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
+			<location x="0" y="0"/>
+			<height>0</height>
+			<width>0</width>
+		</widget>
+		<location x="0" y="0"/>
+		<width>151</width>
+		<height>177</height>
+	</widget>
+</live-window>
+	<hidden field="Targets Width:"/>
+	<hidden field="Targets Y Value"/>
+	<hidden field="Targets Height"/>
+	<hidden field="Targets X Value:"/>
+</xml>
