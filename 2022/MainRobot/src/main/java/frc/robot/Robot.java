@@ -4,13 +4,13 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.math.controller.PIDController;
+import javax.lang.model.util.ElementScanner6;
+
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
+
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
  * each mode, as described in the TimedRobot documentation. If you change the name of this class or
@@ -23,6 +23,7 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+  Shooter shooter = new Shooter();
   Drive drive = new Drive();
 
   /**
@@ -35,14 +36,16 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    // Differential drive no longer inverts right motors by default as of 2022
+    // Initalized the PixyDrivePID
+    drive.initializePixy();
+
+    // Drive motors need to be inverted manually now
     drive.invertRightDriveMotors();
 
-    // Initialize Pixycam
-    drive.initializePixy();
+    // Initialize shooter Encoder and PID
+    shooter.initalizeEncoder();
+    shooter.initPID();
   
-    // Start camera stream for dashboard
-    CameraServer.startAutomaticCapture();
   }
 
   /**
@@ -54,22 +57,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
-    Block target = drive.getTargetBlock();
-    // Show on dashboard how many blue targets are found
-    SmartDashboard.putBoolean("Block found", target != null);
-
-    if(target != null) {
-      SmartDashboard.putNumber("Targets X Value:", target.getX());
-      SmartDashboard.putNumber("Targets Y Value", target.getY());
-      SmartDashboard.putNumber("Targets Width:", target.getWidth());
-      SmartDashboard.putNumber("Targets Height", target.getHeight());
-    }
-
-    // drive.updatePIDValues();
-    drive.displayPIDValues();
-    drive.displayMotorControllerInputs();
-
+    Block block = drive.getTargetBlock();
+    SmartDashboard.putBoolean("Target aquired", block != null);
   }
 
   /**
@@ -98,32 +87,60 @@ public class Robot extends TimedRobot {
         break;
       case kDefaultAuto:
       default:
-        // Put default auto code here
+        drive.pixyAutopilot(.75);
+        shooter.intakeIn();
         break;
     }
   }
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {
-  }
+  public void teleopInit() {}
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
 
-    // Autopilot with pixycam while A button is held
-    // Normal drive otherwise
-    if (OI.driveController.getAButton()) {
-      drive.pixyAutopilot();
+    // Drive control
+    if (OI.pixyAutopilot() == true) {
+      drive.pixyAutopilot(OI.driveThrottle());
     } else {
       drive.XboxDrive();
     }
 
-    // Reset drive PID when leaving autopilot
-    if (OI.driveController.getAButtonReleased()) {
-      drive.resetPID();
+    // Intake Control
+    if(OI.intakeOut()) {
+      shooter.intakeOut();
+    } else if(OI.intakeIn() || shooter.isUpToSpeed()) {
+      shooter.intakeIn();
+    } else {
+      shooter.intakeStop();
     }
+
+    // Indexer control
+    if(OI.moveIndexUp() || shooter.isUpToSpeed()) {
+      shooter.indexForwards();
+    } else if(OI.moveIndexDown()) {
+      shooter.indexBackwards();
+    } else {
+      shooter.indexStop();
+    }
+ 
+    // Shooter control
+    if (OI.shooterManualOverride()) {
+      shooter.setShooterPercentOutput(OI.shooterThrottle());
+    } else {
+      if (OI.shootHigh()) {
+        shooter.setShooterRPM(Shooter.RPM.kHigh); 
+      } else if (OI.shootLow()) {
+        shooter.setShooterRPM(Shooter.RPM.kLow);
+      } else {
+        shooter.setShooterRPM(Shooter.RPM.kStop);;
+      }
+    }
+
+    SmartDashboard.putBoolean("Shooter at setpoint", shooter.isUpToSpeed());
+    SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
   }
 
   /** This function is called once when the robot is disabled. */
@@ -140,7 +157,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
 
-
+  }
 }
