@@ -132,11 +132,11 @@ public class Shooter {
     }
 
     public void indexForwards() {
-        indexerMotor.set(ControlMode.PercentOutput, .8);
+        indexerMotor.set(ControlMode.PercentOutput, .5);
     }
 
     public void indexBackwards() {
-        indexerMotor.set(ControlMode.PercentOutput, -.8);
+        indexerMotor.set(ControlMode.PercentOutput, -.5);
     }
    
     public void indexStop() {
