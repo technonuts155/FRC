@@ -97,7 +97,7 @@ public class Shooter {
                 break;
 
             case kStop:
-                pid.setReference(STOP, ControlType.kVelocity);
+                shooterMotor.set(0);
                 upToSpeed = false;
                 break;
             
