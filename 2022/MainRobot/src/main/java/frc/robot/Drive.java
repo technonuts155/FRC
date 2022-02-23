@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -41,6 +42,23 @@ public class Drive {
     // PIDController for centering on target found by pixycam
     private PIDController drivePID = new PIDController(0.015, 0.0, 0.001);
 
+    // Encoders
+    private Encoder leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A, RobotMap.LEFT_DRIVE_ENCODER_B);
+    private Encoder rightDriveEncoder = new Encoder(RobotMap.RIGHT_DRIVE_ENCODER_A, RobotMap.RIGHT_DRIVE_ENCODER_B);
+
+    public void initializeEncoders(){
+        leftDriveEncoder.setDistancePerPulse(1);
+        rightDriveEncoder.setDistancePerPulse(1);
+    }
+
+    public double getLeftEncoderDistance(){
+        return leftDriveEncoder.getDistance();
+    }
+
+    public double getRightEncoderDistance(){
+        return rightDriveEncoder.getDistance();
+    }
+    
     public void resetPID() {
         drivePID.reset();
     }

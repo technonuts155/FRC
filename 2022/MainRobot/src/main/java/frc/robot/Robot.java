@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
     // Initialize shooter Encoder and PID
     shooter.initalizeEncoder();
     shooter.initPID();
+    drive.initializeEncoders();
   
   }
 
@@ -59,6 +60,8 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     Block block = drive.getTargetBlock();
     SmartDashboard.putBoolean("Target aquired", block != null);
+    SmartDashboard.putNumber("Left Encoder distance", drive.getLeftEncoderDistance());
+    SmartDashboard.putNumber("Right Encoder distance", drive.getRightEncoderDistance());
   }
 
   /**
