@@ -12,11 +12,11 @@ public class RobotMap {
     public static final int SHOOTER_MOTOR = 8;
 
     // Digital Inputs
+    public static final int RIGHT_DRIVE_ENCODER_A = 0;
+    public static final int RIGHT_DRIVE_ENCODER_B = 1;
+    public static final int LEFT_DRIVE_ENCODER_A = 2;
+    public static final int LEFT_DRIVE_ENCODER_B = 3;
     public static final int BEAM_BREAK = 4;
-    public static final int LEFT_DRIVE_ENCODER_A = 0;
-    public static final int LEFT_DRIVE_ENCODER_B = 1;
-    public static final int RIGHT_DRIVE_ENCODER_A = 2;
-    public static final int RIGHT_DRIVE_ENCODER_B = 3;
 
     // Analog Inputs
     
