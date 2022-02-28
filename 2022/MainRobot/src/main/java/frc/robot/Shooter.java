@@ -115,11 +115,11 @@ public class Shooter {
         return intakeMotor.getMotorOutputPercent();
     }
     public void intakeOut() {
-        intakeMotor.set(ControlMode.PercentOutput, 0.5);
+        intakeMotor.set(ControlMode.PercentOutput, 0.75);
     }
 
     public void intakeIn() {
-        intakeMotor.set(ControlMode.PercentOutput, -0.5);
+        intakeMotor.set(ControlMode.PercentOutput, -0.75);
     }
 
     public void intakeStop() {

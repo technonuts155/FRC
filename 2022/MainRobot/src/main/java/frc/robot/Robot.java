@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
     drive.initializePixy();
 
     // Drive motors need to be inverted manually now
-    drive.invertRightDriveMotors();
+    drive.invertLeftDriveMotors();
 
     // Initialize shooter Encoder and PID
     shooter.initalizeEncoder();
