@@ -26,8 +26,6 @@ public class Drive {
     private WPI_VictorSPX rightMotor1 = new WPI_VictorSPX(RobotMap.RIGHT_DRIVE_1);
     private WPI_VictorSPX rightMotor2 = new WPI_VictorSPX(RobotMap.RIGHT_DRIVE_2);
 
-    
-
     // Group left and right motors
     private MotorControllerGroup leftMotors = new MotorControllerGroup(leftMotor1, leftMotor2);
     private MotorControllerGroup rightMotors = new MotorControllerGroup(rightMotor1, rightMotor2);
@@ -45,6 +43,11 @@ public class Drive {
     // Encoders
     private Encoder leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A, RobotMap.LEFT_DRIVE_ENCODER_B);
     private Encoder rightDriveEncoder = new Encoder(RobotMap.RIGHT_DRIVE_ENCODER_A, RobotMap.RIGHT_DRIVE_ENCODER_B);
+
+    public void resetEncoders() {
+        leftDriveEncoder.reset();
+        rightDriveEncoder.reset();
+    }
 
     public void initializeEncoders(){
         leftDriveEncoder.setDistancePerPulse(1);
@@ -191,6 +194,14 @@ public class Drive {
         SmartDashboard.putNumber("P", drivePID.getP());
         SmartDashboard.putNumber("I", drivePID.getI());
         SmartDashboard.putNumber("D", drivePID.getD());
+    }
+
+    public void setLeftMotors(double speed) {
+        leftMotors.set(speed);
+    }
+
+    public void setRightMotors(double speed) {
+        rightMotors.set(speed);
     }
 
     public void XboxDrive() {

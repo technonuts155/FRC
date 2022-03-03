@@ -6,6 +6,7 @@ package frc.robot;
 
 import javax.lang.model.util.ElementScanner6;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,6 +19,15 @@ import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
  * project.
  */
 public class Robot extends TimedRobot {
+
+  enum AutoStates {
+    shoot,
+    collect,
+    reverse
+  }
+
+  AutoStates currentState;
+
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
@@ -32,9 +42,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+    // Set default starting state for autonomous
+    currentState = AutoStates.shoot;
 
     // Initalized the PixyDrivePID
     drive.initializePixy();
@@ -76,22 +85,72 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    // Make sure autonomous starts by shooting
+    currentState = AutoStates.shoot;
+
+    // Zero the encoders
+    drive.resetEncoders();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
+    switch (currentState) {
+      case shoot:
+        // Actions in case
+        shooter.setShooterRPM(Shooter.RPM.kHigh);
+
+        if (shooter.isUpToSpeed()) {
+          shooter.indexForwards();
+        } else {
+          shooter.indexStop();
+        }
+
+        shooter.intakeStop();
+        drive.setLeftMotors(0);
+        drive.setRightMotors(0);
+        
+        // Condition for changing cases
+        if (DriverStation.getMatchTime() > 4 && DriverStation.getMatchTime() < 6) {
+          currentState = AutoStates.collect;
+        }
         break;
-      case kDefaultAuto:
-      default:
-        drive.pixyAutopilot(.75);
+
+      case collect:
+        // Actions in case
+        drive.pixyAutopilot(.5);
         shooter.intakeIn();
+        shooter.indexForwards();
+
+        // Condition for changing cases
+        //true is subject to change, could be false
+        if(shooter.getBeamBreak() == true) {
+          currentState = AutoStates.reverse;
+        }
+        break;
+      
+      case reverse:
+        // Actions in case
+        if (drive.getLeftEncoderDistance() > 4) {
+          drive.setLeftMotors(-0.5);
+        } else {
+          drive.setLeftMotors(0);
+        }
+
+        if (drive.getRightEncoderDistance() > 4) {
+          drive.setRightMotors(-0.5);
+        } else {
+          drive.setRightMotors(0);
+        }
+
+        shooter.setShooterRPM(Shooter.RPM.kStop);
+        shooter.intakeStop();
+        shooter.indexStop();
+
+        // Condition for changing cases
+        if (drive.getLeftEncoderDistance() < 4 && drive.getRightEncoderDistance() < 4) {
+          currentState = AutoStates.shoot;
+        }
         break;
     }
   }
