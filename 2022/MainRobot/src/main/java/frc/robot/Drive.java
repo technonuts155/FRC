@@ -43,6 +43,8 @@ public class Drive {
     // Encoders
     private Encoder leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A, RobotMap.LEFT_DRIVE_ENCODER_B);
     private Encoder rightDriveEncoder = new Encoder(RobotMap.RIGHT_DRIVE_ENCODER_A, RobotMap.RIGHT_DRIVE_ENCODER_B);
+    private final double PULSES_TO_INCHES = 1 / 18.9231;
+    private final double PULSES_TO_FEET = PULSES_TO_INCHES * 12;
 
     public void resetEncoders() {
         leftDriveEncoder.reset();
@@ -50,8 +52,8 @@ public class Drive {
     }
 
     public void initializeEncoders(){
-        leftDriveEncoder.setDistancePerPulse(1);
-        rightDriveEncoder.setDistancePerPulse(1);
+        leftDriveEncoder.setDistancePerPulse(PULSES_TO_INCHES);
+        rightDriveEncoder.setDistancePerPulse(PULSES_TO_INCHES);
     }
 
     public double getLeftEncoderDistance(){
