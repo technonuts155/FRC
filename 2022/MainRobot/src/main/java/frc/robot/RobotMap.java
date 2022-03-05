@@ -10,6 +10,9 @@ public class RobotMap {
     public static final int INTAKE_MOTOR = 6;
     public static final int INDEXER_MOTOR = 7;
     public static final int SHOOTER_MOTOR = 8;
+    public static final int CLIMB_MOTOR_1 = 9;
+    public static final int CLIMB_MOTOR_2 = 10;
+
 
     // Digital Inputs
     public static final int RIGHT_DRIVE_ENCODER_A = 0;

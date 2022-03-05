@@ -71,6 +71,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Target aquired", block != null);
     SmartDashboard.putNumber("Left Encoder distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder distance", drive.getRightEncoderDistance());
+    SmartDashboard.putBoolean("Beam break", shooter.getBeamBreak());
   }
 
   /**
