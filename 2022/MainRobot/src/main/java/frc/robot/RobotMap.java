@@ -20,7 +20,10 @@ public class RobotMap {
     public static final int LEFT_DRIVE_ENCODER_A = 2;
     public static final int LEFT_DRIVE_ENCODER_B = 3;
     public static final int BEAM_BREAK = 4;
-
+    public static final int CLIMB_LIMIT_SWITCH_LOW = 5;
+    public static final int CLIMB_LIMIT_SWITCH_UPPER = 6;
+    public static final int CLIMB_LIMIT_SWITCH_MIDDLE = 7;
+    
     // Analog Inputs
     
 

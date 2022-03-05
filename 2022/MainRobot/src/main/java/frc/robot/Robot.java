@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
 
   Shooter shooter = new Shooter();
   Drive drive = new Drive();
-
+  Climb climb = new Climb();
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -221,6 +221,16 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    /*
+    if(OI.driverController.getYButton()){
+      climb.setClimbUp();
+    } else if (OI.driverController.getAButton()) {
+      climb.setClimbDown();
+    } else {
+      climb.setClimbStop();
+    }
+    */
 
+    climb.setClimbPercentOutput(OI.driverController.getRawAxis(5));
   }
 }
