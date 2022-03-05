@@ -6,10 +6,14 @@ package frc.robot;
 
 import javax.lang.model.util.ElementScanner6;
 
+import com.revrobotics.ColorSensorV3;
+
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 
 /**
@@ -36,6 +40,9 @@ public class Robot extends TimedRobot {
   Shooter shooter = new Shooter();
   Drive drive = new Drive();
   Climb climb = new Climb();
+
+  
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -71,7 +78,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Target aquired", block != null);
     SmartDashboard.putNumber("Left Encoder distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder distance", drive.getRightEncoderDistance());
-    SmartDashboard.putBoolean("Beam break", shooter.getBeamBreak());
+    SmartDashboard.putBoolean("Ball loaded", shooter.ballIsLoaded());
+
   }
 
   /**
@@ -183,7 +191,9 @@ public class Robot extends TimedRobot {
     // Indexer control
     if(OI.moveIndexUp() || shooter.isUpToSpeed()) {
       shooter.indexForwards();
-    } else if(OI.moveIndexDown()) {
+    } else if (shooter.getIntakeSpeed() < -.5 && shooter.ballIsLoaded() == false) {
+      shooter.indexForwards();
+    } else if (OI.moveIndexDown()) {
       shooter.indexBackwards();
     } else {
       shooter.indexStop();

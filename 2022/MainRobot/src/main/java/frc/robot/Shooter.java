@@ -7,13 +7,18 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ColorSensorV3;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
 
 
 public class Shooter {
@@ -43,8 +48,12 @@ public class Shooter {
     private final double tolerance = 75;   
     private boolean upToSpeed = false;
     
-    //Beam Break
+    //Beam Break lmao
     DigitalInput beamBreak = new DigitalInput(RobotMap.BEAM_BREAK);
+
+    // Color sensor (better beambreak)
+    ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+    
 
     public void setShooterPercentOutput(double output) {
         shooterMotor.set(output);
@@ -146,5 +155,21 @@ public class Shooter {
     // Beambreak
     public boolean getBeamBreak() {
         return beamBreak.get();
+    }
+
+    // Color Sensor
+    public boolean ballIsLoaded() {
+        Color colorDetected = colorSensor.getColor();
+
+        SmartDashboard.putNumber("Red", colorDetected.red);
+        SmartDashboard.putNumber("Green", colorDetected.green);
+        SmartDashboard.putNumber("Blue", colorDetected.blue);
+
+        if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
+            return (colorDetected.red >= .38);
+        } else {
+            return (colorDetected.blue >= .30);
+        }
+
     }
 }
