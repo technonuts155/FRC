@@ -91,7 +91,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("At speed", shooter.isUpToSpeed());
     SmartDashboard.putNumber("ColorSensor IR", shooter.getColorSensorIR());
     SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
-    drive.updateEncoderPIDValues();
     }
 
   /**

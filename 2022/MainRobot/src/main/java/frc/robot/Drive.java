@@ -39,8 +39,8 @@ public class Drive {
 
     // PIDController for centering on target found by pixycam
     private PIDController pixyPID = new PIDController(0.015, 0.0, 0.001);
-    private PIDController encoderPIDLeft = new PIDController(0, 0, 0);
-    private PIDController encoderPIDRight = new PIDController(0, 0, 0);
+    private PIDController encoderPIDLeft = new PIDController(0.0005, 0.005, 0);
+    private PIDController encoderPIDRight = new PIDController(0.0005, 0.005, 0);
 
     // Encoders
     private Encoder leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A, RobotMap.LEFT_DRIVE_ENCODER_B);
