@@ -38,13 +38,38 @@ public class Drive {
     private final double HORIZONTAL_CENTER = 157.5;
 
     // PIDController for centering on target found by pixycam
-    private PIDController drivePID = new PIDController(0.015, 0.0, 0.001);
+    private PIDController pixyPID = new PIDController(0.015, 0.0, 0.001);
+    private PIDController encoderPIDLeft = new PIDController(0, 0, 0);
+    private PIDController encoderPIDRight = new PIDController(0, 0, 0);
 
     // Encoders
     private Encoder leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A, RobotMap.LEFT_DRIVE_ENCODER_B);
     private Encoder rightDriveEncoder = new Encoder(RobotMap.RIGHT_DRIVE_ENCODER_A, RobotMap.RIGHT_DRIVE_ENCODER_B);
     private final double PULSES_TO_INCHES = 1 / 18.9231;
     private final double PULSES_TO_FEET = PULSES_TO_INCHES * 12;
+
+    public void updateEncoderPIDValues() {
+        encoderPIDLeft.setP(Preferences.getDouble("PID kP", 0.0));
+        encoderPIDLeft.setI(Preferences.getDouble("PID kI", 0.0));
+        encoderPIDLeft.setD(Preferences.getDouble("PID kD", 0.0));
+        encoderPIDRight.setP(Preferences.getDouble("PID kP", 0.0));
+        encoderPIDRight.setI(Preferences.getDouble("PID kI", 0.0));
+        encoderPIDRight.setD(Preferences.getDouble("PID kD", 0.0));
+    }
+
+    public void encoderPIDDrive() {
+        if (Math.abs(getRightEncoderDistance()) > 5) {
+            rightMotors.set(encoderPIDRight.calculate(getRightEncoderDistance(), 0));
+        } else {
+            rightMotors.set(0);
+        }
+
+        if (Math.abs(getLeftEncoderDistance()) > 5) {
+            leftMotors.set(-encoderPIDLeft.calculate(getLeftEncoderDistance(), 0));
+        } else {
+            leftMotors.set(0);
+        }
+    }
 
     public void resetEncoders() {
         leftDriveEncoder.reset();
@@ -65,27 +90,27 @@ public class Drive {
     }
     
     public void resetPID() {
-        drivePID.reset();
+        pixyPID.reset();
     }
 
     // Used for tuning the PID
     // Pulls numbers from the Preferences box of the Smartdashboard
     public void updatePIDValues() {
-        drivePID.setP(Preferences.getDouble("drivePID kP", 0.0));
-        drivePID.setI(Preferences.getDouble("drivePID kI", 0.0));
-        drivePID.setD(Preferences.getDouble("drivePID kD", 0.0));
-        drivePID.setTolerance(Preferences.getDouble("drivePID Tolerance", 10));
-        drivePID.setSetpoint(Preferences.getDouble("drivePID Setpoint", 157.5));
+        pixyPID.setP(Preferences.getDouble("pixyPID kP", 0.0));
+        pixyPID.setI(Preferences.getDouble("pixyPID kI", 0.0));
+        pixyPID.setD(Preferences.getDouble("pixyPID kD", 0.0));
+        pixyPID.setTolerance(Preferences.getDouble("pixyPID Tolerance", 10));
+        pixyPID.setSetpoint(Preferences.getDouble("pixyPID Setpoint", 157.5));
     }
 
     
 
     public void setPIDSetpoint(double setpoint) {
-        drivePID.setSetpoint(setpoint);
+        pixyPID.setSetpoint(setpoint);
     }
 
     public void setPIDTolerance(double tolerance) {
-        drivePID.setTolerance(tolerance);
+        pixyPID.setTolerance(tolerance);
     }
 
     private double getBlockCenterX(Block block) {
@@ -181,7 +206,7 @@ public class Drive {
         Block target = getTargetBlock();
 
         if (target != null) {
-            double turnRate = drivePID.calculate(getBlockCenterX(target), 190);
+            double turnRate = pixyPID.calculate(getBlockCenterX(target), 190);
             drivetrain.arcadeDrive(speed, turnRate);
         } else {
             drivetrain.arcadeDrive(speed, OI.driveRotation() * -1);
@@ -189,13 +214,13 @@ public class Drive {
     }
 
     public void PIDAtSetpoint() {
-        SmartDashboard.putBoolean("At setpoint", drivePID.atSetpoint());
+        SmartDashboard.putBoolean("At setpoint", pixyPID.atSetpoint());
     }
 
     public void displayPIDValues() {
-        SmartDashboard.putNumber("P", drivePID.getP());
-        SmartDashboard.putNumber("I", drivePID.getI());
-        SmartDashboard.putNumber("D", drivePID.getD());
+        SmartDashboard.putNumber("P", pixyPID.getP());
+        SmartDashboard.putNumber("I", pixyPID.getI());
+        SmartDashboard.putNumber("D", pixyPID.getD());
     }
 
     public void setLeftMotors(double speed) {

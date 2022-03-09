@@ -40,12 +40,12 @@ public class Shooter {
     private RelativeEncoder shooterEncoder;
 
     // RPM setpoint constants for shooter control
-    private final double HIGH = 3750.0;
+    private final double HIGH = 3700.0;
     private final double LOW = 2700.0;
     private final double STOP = 0;
 
     // Tolerance for shooter RPM and boolean for being within tolerance (shooter is up to speed)
-    private final double tolerance = 75;   
+    private final double tolerance = 100;   
     private boolean upToSpeed = false;
     
     //Beam Break lmao
@@ -140,8 +140,12 @@ public class Shooter {
         return indexerMotor.getMotorOutputPercent();
     }
 
+    public void indexForwardsSlow() {
+        indexerMotor.set(ControlMode.PercentOutput, .4);
+    }
+
     public void indexForwards() {
-        indexerMotor.set(ControlMode.PercentOutput, .5);
+        indexerMotor.set(ControlMode.PercentOutput, .75);
     }
 
     public void indexBackwards() {
@@ -165,11 +169,19 @@ public class Shooter {
         SmartDashboard.putNumber("Green", colorDetected.green);
         SmartDashboard.putNumber("Blue", colorDetected.blue);
 
+        return (colorSensor.getIR() > 5);
+
+        /*
         if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
             return (colorDetected.red >= .38);
         } else {
             return (colorDetected.blue >= .30);
         }
+        */
 
+    }
+
+    public int getColorSensorIR() {
+        return colorSensor.getIR();
     }
 }

@@ -78,11 +78,11 @@ public class OI {
     }
 
     public static double driveThrottle() {
-        return driverController.getRawAxis(RIGHT_THUMB_VERTICAL);
+        return driverController.getRawAxis(LEFT_THUMB_VERTICAL);
     }
 
     public static double driveRotation() {
-        return driverController.getRawAxis(LEFT_THUMB_HORIZONTAL);
+        return driverController.getRawAxis(RIGHT_THUMB_HORIZONTAL);
     }
 
     public static double shooterThrottle() {

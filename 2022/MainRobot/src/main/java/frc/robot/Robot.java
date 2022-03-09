@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.sql.Time;
+import java.util.TimerTask;
+
 import javax.lang.model.util.ElementScanner6;
 
 import com.revrobotics.ColorSensorV3;
@@ -11,6 +14,7 @@ import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -27,7 +31,8 @@ public class Robot extends TimedRobot {
   enum AutoStates {
     shoot,
     collect,
-    reverse
+    reverse,
+    stop
   }
 
   AutoStates currentState;
@@ -40,6 +45,10 @@ public class Robot extends TimedRobot {
   Shooter shooter = new Shooter();
   Drive drive = new Drive();
   Climb climb = new Climb();
+
+  // Don't worry about it
+  double startTime = 0;
+  double timeStamp = 0;
 
   
 
@@ -79,8 +88,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left Encoder distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder distance", drive.getRightEncoderDistance());
     SmartDashboard.putBoolean("Ball loaded", shooter.ballIsLoaded());
-
-  }
+    SmartDashboard.putBoolean("At speed", shooter.isUpToSpeed());
+    SmartDashboard.putNumber("ColorSensor IR", shooter.getColorSensorIR());
+    SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
+    drive.updateEncoderPIDValues();
+    }
 
   /**
    * This autonomous (along with the chooser code above) shows how to select between different
@@ -99,11 +111,17 @@ public class Robot extends TimedRobot {
 
     // Zero the encoders
     drive.resetEncoders();
+
+    startTime = Timer.getFPGATimestamp();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+
+    SmartDashboard.putNumber("Match time", Timer.getFPGATimestamp() - startTime);
+    SmartDashboard.putString("Auto State", currentState.toString());
+
     switch (currentState) {
       case shoot:
         // Actions in case
@@ -120,45 +138,53 @@ public class Robot extends TimedRobot {
         drive.setRightMotors(0);
         
         // Condition for changing cases
-        if (DriverStation.getMatchTime() > 4 && DriverStation.getMatchTime() < 6) {
+        if (Timer.getFPGATimestamp() - startTime > 1.5 && Timer.getFPGATimestamp() - startTime < 5) {
           currentState = AutoStates.collect;
         }
         break;
 
       case collect:
         // Actions in case
-        drive.pixyAutopilot(.5);
+        drive.pixyAutopilot(-.65);
         shooter.intakeIn();
-        shooter.indexForwards();
+        shooter.indexForwardsSlow();
+        shooter.setShooterRPM(Shooter.RPM.kStop);
 
         // Condition for changing cases
         //true is subject to change, could be false
-        if(shooter.getBeamBreak() == true) {
-          currentState = AutoStates.reverse;
+        if(shooter.ballIsLoaded() == true) {
+          timeStamp = Timer.getFPGATimestamp();
+          currentState = AutoStates.stop;
         }
         break;
       
       case reverse:
         // Actions in case
-        if (drive.getLeftEncoderDistance() > 4) {
-          drive.setLeftMotors(-0.5);
-        } else {
-          drive.setLeftMotors(0);
-        }
-
-        if (drive.getRightEncoderDistance() > 4) {
-          drive.setRightMotors(-0.5);
-        } else {
-          drive.setRightMotors(0);
-        }
+        drive.encoderPIDDrive();
 
         shooter.setShooterRPM(Shooter.RPM.kStop);
         shooter.intakeStop();
         shooter.indexStop();
 
         // Condition for changing cases
-        if (drive.getLeftEncoderDistance() < 4 && drive.getRightEncoderDistance() < 4) {
+        if (Math.abs(drive.getRightEncoderDistance()) < 5 && Math.abs(drive.getLeftEncoderDistance()) < 5) {
           currentState = AutoStates.shoot;
+        }
+        break;
+
+      case stop:
+        drive.setLeftMotors(0);
+        drive.setRightMotors(0);
+        shooter.indexStop();
+        shooter.intakeStop();
+        shooter.setShooterRPM(Shooter.RPM.kStop);
+
+        System.out.println("Made it to Stop");
+        System.out.println("FPGATimestamp: " + Timer.getFPGATimestamp());
+        System.out.println("Entered timestamp: " + timeStamp);
+
+        if (Timer.getFPGATimestamp() - timeStamp > 1) {
+          currentState = AutoStates.reverse;
         }
         break;
     }
@@ -172,9 +198,22 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    /*
     // Drive control
     if (OI.pixyAutopilot() == true) {
       drive.pixyAutopilot(OI.driveThrottle());
+    } else {
+      drive.XboxDrive();
+    }
+    */
+
+    
+    if (OI.driverController.getAButtonPressed()) {
+      drive.resetEncoders();
+    }
+
+    if (OI.driverController.getBButton()) {
+      drive.encoderPIDDrive();
     } else {
       drive.XboxDrive();
     }
@@ -182,7 +221,7 @@ public class Robot extends TimedRobot {
     // Intake Control
     if(OI.intakeOut()) {
       shooter.intakeOut();
-    } else if(OI.intakeIn() || shooter.isUpToSpeed()) {
+    } else if(OI.intakeIn() || shooter.isUpToSpeed() || OI.pixyAutopilot()) {
       shooter.intakeIn();
     } else {
       shooter.intakeStop();
@@ -192,7 +231,7 @@ public class Robot extends TimedRobot {
     if(OI.moveIndexUp() || shooter.isUpToSpeed()) {
       shooter.indexForwards();
     } else if (shooter.getIntakeSpeed() < -.5 && shooter.ballIsLoaded() == false) {
-      shooter.indexForwards();
+      shooter.indexForwardsSlow();
     } else if (OI.moveIndexDown()) {
       shooter.indexBackwards();
     } else {
