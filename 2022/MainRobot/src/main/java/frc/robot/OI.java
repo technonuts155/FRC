@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.XboxController;
 
 public class OI {
     public static XboxController driverController = new XboxController(0);
-    public static XboxController operatController = new XboxController(1);
+    public static XboxController operatorController = new XboxController(1);
 
     // Defining button IDs
     public static final int A_BUTTON = 1;
@@ -33,19 +33,19 @@ public class OI {
 
     // Get button functions
     public static boolean intakeOut() {
-        return operatController.getRawButton(B_BUTTON);
+        return operatorController.getRawButton(B_BUTTON);
     }
 
     public static boolean intakeIn() {
-        return operatController.getRawButton(X_BUTTON);
+        return operatorController.getRawButton(X_BUTTON);
     }
 
     public static boolean shootLow() { 
-        return (operatController.getRightTriggerAxis() > .5 || operatController.getLeftTriggerAxis() > .5);
+        return (operatorController.getRightTriggerAxis() > .5 || operatorController.getLeftTriggerAxis() > .5);
     }
 
     public static boolean shootHigh() { 
-        return (operatController.getRightTriggerAxis() > .5 && operatController.getLeftTriggerAxis() > .5);
+        return (operatorController.getRightTriggerAxis() > .5 && operatorController.getLeftTriggerAxis() > .5);
      }
 
     public static boolean hang() {
@@ -57,7 +57,7 @@ public class OI {
     }
 
     public static boolean shooterManualOverride() {
-        return (operatController.getRawButton(START_BUTTON));
+        return (operatorController.getRawButton(START_BUTTON));
     }
 
     /** What are you doing? it's time to stop. */
@@ -66,11 +66,11 @@ public class OI {
     }
 
     public static boolean moveIndexDown() {
-        return operatController.getRawButton(A_BUTTON);
+        return operatorController.getRawButton(A_BUTTON);
     }
 
     public static boolean moveIndexUp() {
-        return operatController.getRawButton(Y_BUTTON);
+        return operatorController.getRawButton(Y_BUTTON);
     }
 
     public static boolean collectionAssist() {
@@ -78,7 +78,7 @@ public class OI {
     }
 
     public static double driveThrottle() {
-        return driverController.getRawAxis(LEFT_THUMB_VERTICAL);
+        return  driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis();
     }
 
     public static double driveRotation() {
@@ -86,6 +86,22 @@ public class OI {
     }
 
     public static double shooterThrottle() {
-        return operatController.getRawAxis(LEFT_THUMB_VERTICAL);
+        return operatorController.getRawAxis(LEFT_THUMB_VERTICAL);
+    }
+    
+    public static boolean climbUp() {
+        return operatorController.getPOV() == D_PAD_UP;
+    }
+
+    public static boolean climbDown() {
+        return operatorController.getPOV() == D_PAD_DOWN;
+    }
+
+    public static boolean climbLock() {
+        return operatorController.getLeftBumper();
+    }
+
+    public static boolean climbUnlock() {
+        return operatorController.getRightBumper();
     }
 }

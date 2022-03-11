@@ -39,8 +39,8 @@ public class Drive {
 
     // PIDController for centering on target found by pixycam
     private PIDController pixyPID = new PIDController(0.015, 0.0, 0.001);
-    private PIDController encoderPIDLeft = new PIDController(0.0005, 0.005, 0);
-    private PIDController encoderPIDRight = new PIDController(0.0005, 0.005, 0);
+    private PIDController encoderPIDLeft = new PIDController(0.005, 0.0005, 0);
+    private PIDController encoderPIDRight = new PIDController(0.005, 0.0005, 0);
 
     // Encoders
     private Encoder leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A, RobotMap.LEFT_DRIVE_ENCODER_B);
@@ -122,12 +122,14 @@ public class Drive {
     }
 
     public boolean matchesAllianceColor(Block block) {
+
         if(DriverStation.getAlliance() == Alliance.Blue) {
             //it gon' be blue
             return(block.getSignature() == 1);
         } else {
             //it gon' be red
             return (block.getSignature() == 2);
+        
         }
     }
 
@@ -175,7 +177,7 @@ public class Drive {
         // Create new list of only blocks that are square enough
         // Perfectly identified cargo should be a square because
         // a bounding box drawn around a circle is a square.
-        for(Block block : colorBlocks) {
+        for(Block block : blocks) {
             if(matchesBlockRatioHW(block, .5) == true) {
                 ratioedBlocks.add(block);
             }
@@ -251,7 +253,7 @@ public class Drive {
         }
 
         // Give values to motor controllers
-        drivetrain.arcadeDrive(speed, rotation * -1);
+        drivetrain.arcadeDrive(speed * .9, rotation * -.9);
     }
 
     public void displayMotorControllerOutputCurrents() {

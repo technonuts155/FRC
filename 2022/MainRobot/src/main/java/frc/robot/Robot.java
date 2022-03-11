@@ -9,15 +9,10 @@ import java.util.TimerTask;
 
 import javax.lang.model.util.ElementScanner6;
 
-import com.revrobotics.ColorSensorV3;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 
 /**
@@ -58,9 +53,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Set default starting state for autonomous
-    currentState = AutoStates.shoot;
-
     // Initalized the PixyDrivePID
     drive.initializePixy();
 
@@ -70,8 +62,12 @@ public class Robot extends TimedRobot {
     // Initialize shooter Encoder and PID
     shooter.initalizeEncoder();
     shooter.initPID();
+
+    // Initialize drive encoders
     drive.initializeEncoders();
   
+    // Start climber servo in unlocked position
+    climb.setLock(Climb.Lock.unlocked);
   }
 
   /**
@@ -91,6 +87,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("At speed", shooter.isUpToSpeed());
     SmartDashboard.putNumber("ColorSensor IR", shooter.getColorSensorIR());
     SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
+    SmartDashboard.putBoolean("Lower Climb Limit", climb.getLimitLower());
+    SmartDashboard.putBoolean("Upper Climb Limit", climb.getLimitUpper());
     }
 
   /**
@@ -167,22 +165,21 @@ public class Robot extends TimedRobot {
 
         // Condition for changing cases
         if (Math.abs(drive.getRightEncoderDistance()) < 5 && Math.abs(drive.getLeftEncoderDistance()) < 5) {
+          timeStamp = Timer.getFPGATimestamp();
           currentState = AutoStates.shoot;
         }
         break;
 
       case stop:
+        // Actions in case
         drive.setLeftMotors(0);
         drive.setRightMotors(0);
         shooter.indexStop();
         shooter.intakeStop();
         shooter.setShooterRPM(Shooter.RPM.kStop);
 
-        System.out.println("Made it to Stop");
-        System.out.println("FPGATimestamp: " + Timer.getFPGATimestamp());
-        System.out.println("Entered timestamp: " + timeStamp);
-
-        if (Timer.getFPGATimestamp() - timeStamp > 1) {
+        // Condition for changing cases
+        if (Timer.getFPGATimestamp() - timeStamp > .5) {
           currentState = AutoStates.reverse;
         }
         break;
@@ -197,22 +194,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    /*
     // Drive control
     if (OI.pixyAutopilot() == true) {
       drive.pixyAutopilot(OI.driveThrottle());
-    } else {
-      drive.XboxDrive();
-    }
-    */
-
-    
-    if (OI.driverController.getAButtonPressed()) {
-      drive.resetEncoders();
-    }
-
-    if (OI.driverController.getBButton()) {
-      drive.encoderPIDDrive();
     } else {
       drive.XboxDrive();
     }
@@ -250,8 +234,21 @@ public class Robot extends TimedRobot {
       }
     }
 
-    SmartDashboard.putBoolean("Shooter at setpoint", shooter.isUpToSpeed());
-    SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
+    // Climber control
+    if (OI.climbUp() && climb.getLimitUpper() == false) {
+      climb.setClimbUp();
+    } else if (OI.climbDown() && climb.getLimitLower() == false) {
+      climb.setClimbDown();
+    } else {
+      climb.setClimbStop();
+    }
+
+    if (OI.climbLock()) {
+      climb.setLock(Climb.Lock.locked);
+    }
+    if (OI.climbUnlock()) {
+      climb.setLock(Climb.Lock.unlocked);
+    }
   }
 
   /** This function is called once when the robot is disabled. */
@@ -269,16 +266,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-    /*
-    if(OI.driverController.getYButton()){
-      climb.setClimbUp();
-    } else if (OI.driverController.getAButton()) {
-      climb.setClimbDown();
-    } else {
-      climb.setClimbStop();
-    }
-    */
 
-    climb.setClimbPercentOutput(OI.driverController.getRawAxis(5));
   }
 }

@@ -4,13 +4,29 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Servo;
 
 public class Climb {
+
+    enum Lock {
+        locked,
+        unlocked
+    }
+
     private VictorSPX climbMotor1 = new VictorSPX(RobotMap.CLIMB_MOTOR_1);
     private VictorSPX climbMotor2 = new VictorSPX(RobotMap.CLIMB_MOTOR_2);
     private DigitalInput lower = new DigitalInput(RobotMap.CLIMB_LIMIT_SWITCH_LOW);
     private DigitalInput upper = new DigitalInput(RobotMap.CLIMB_LIMIT_SWITCH_UPPER);
     private DigitalInput middle = new DigitalInput(RobotMap.CLIMB_LIMIT_SWITCH_MIDDLE);
+    private Servo climbLock = new Servo(RobotMap.CLIMB_SERVO);
+
+    public void setLock(Lock state) {
+        if (state == Lock.unlocked) {
+            climbLock.set(0);
+        } else {
+            climbLock.set(50);
+        }
+    }
 
     public boolean getLimitLower() {
         return lower.get();
@@ -22,12 +38,13 @@ public class Climb {
         return middle.get();
     }
     public void setClimbUp() {
-        climbMotor1.set(ControlMode.PercentOutput, 1);
-        climbMotor2.set(ControlMode.PercentOutput, 1);
+        climbMotor1.set(ControlMode.PercentOutput, -.75);
+        climbMotor2.set(ControlMode.PercentOutput, -.75);
     }
+
     public void setClimbDown() {
-        climbMotor1.set(ControlMode.PercentOutput, -1);
-        climbMotor2.set(ControlMode.PercentOutput, -1);
+        climbMotor1.set(ControlMode.PercentOutput, .75);
+        climbMotor2.set(ControlMode.PercentOutput, .75);
     }
     public void setClimbStop() {
         climbMotor1.set(ControlMode.PercentOutput, 0.0);
