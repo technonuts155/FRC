@@ -78,7 +78,7 @@ public class OI {
     }
 
     public static double driveThrottle() {
-        return  driverController.getLeftTriggerAxis() - driverController.getRightTriggerAxis();
+        return  driverController.getRawAxis(LEFT_THUMB_VERTICAL);
     }
 
     public static double driveRotation() {

@@ -79,8 +79,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    Block block = drive.getTargetBlock();
-    SmartDashboard.putBoolean("Target aquired", block != null);
     SmartDashboard.putNumber("Left Encoder distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder distance", drive.getRightEncoderDistance());
     SmartDashboard.putBoolean("Ball loaded", shooter.ballIsLoaded());
@@ -148,7 +146,6 @@ public class Robot extends TimedRobot {
         shooter.setShooterRPM(Shooter.RPM.kStop);
 
         // Condition for changing cases
-        //true is subject to change, could be false
         if(shooter.ballIsLoaded() == true) {
           timeStamp = Timer.getFPGATimestamp();
           currentState = AutoStates.stop;
@@ -164,7 +161,8 @@ public class Robot extends TimedRobot {
         shooter.indexStop();
 
         // Condition for changing cases
-        if (Math.abs(drive.getRightEncoderDistance()) < 5 && Math.abs(drive.getLeftEncoderDistance()) < 5) {
+        if ((Math.abs(drive.getRightEncoderDistance()) < 5 && Math.abs(drive.getLeftEncoderDistance()) < 5) ||
+            Timer.getFPGATimestamp() - startTime > 12) {
           timeStamp = Timer.getFPGATimestamp();
           currentState = AutoStates.shoot;
         }
@@ -179,9 +177,11 @@ public class Robot extends TimedRobot {
         shooter.setShooterRPM(Shooter.RPM.kStop);
 
         // Condition for changing cases
+        /*
         if (Timer.getFPGATimestamp() - timeStamp > .5) {
           currentState = AutoStates.reverse;
         }
+        */
         break;
     }
   }

@@ -22,9 +22,9 @@ public class Climb {
 
     public void setLock(Lock state) {
         if (state == Lock.unlocked) {
-            climbLock.set(0);
+            climbLock.setAngle(30);
         } else {
-            climbLock.set(50);
+            climbLock.setAngle(50);
         }
     }
 

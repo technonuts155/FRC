@@ -12,6 +12,7 @@ import io.github.pseudoresonance.pixy2api.Pixy2;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 import io.github.pseudoresonance.pixy2api.links.SPILink;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 
@@ -39,8 +40,8 @@ public class Drive {
 
     // PIDController for centering on target found by pixycam
     private PIDController pixyPID = new PIDController(0.015, 0.0, 0.001);
-    private PIDController encoderPIDLeft = new PIDController(0.005, 0.0005, 0);
-    private PIDController encoderPIDRight = new PIDController(0.005, 0.0005, 0);
+    private PIDController encoderPIDLeft = new PIDController(0.008, 0.0005, 0);
+    private PIDController encoderPIDRight = new PIDController(0.008, 0.0005, 0);
 
     // Encoders
     private Encoder leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A, RobotMap.LEFT_DRIVE_ENCODER_B);
@@ -79,6 +80,12 @@ public class Drive {
     public void initializeEncoders(){
         leftDriveEncoder.setDistancePerPulse(PULSES_TO_INCHES);
         rightDriveEncoder.setDistancePerPulse(PULSES_TO_INCHES);
+
+        // Also set drive motors ramp rate, don't ask why it's here
+        leftMotor1.configOpenloopRamp(.2);
+        leftMotor2.configOpenloopRamp(.2);
+        rightMotor1.configOpenloopRamp(.2);
+        rightMotor2.configOpenloopRamp(.2);
     }
 
     public double getLeftEncoderDistance(){
@@ -177,7 +184,7 @@ public class Drive {
         // Create new list of only blocks that are square enough
         // Perfectly identified cargo should be a square because
         // a bounding box drawn around a circle is a square.
-        for(Block block : blocks) {
+        for(Block block : colorBlocks) {
             if(matchesBlockRatioHW(block, .5) == true) {
                 ratioedBlocks.add(block);
             }
@@ -253,7 +260,7 @@ public class Drive {
         }
 
         // Give values to motor controllers
-        drivetrain.arcadeDrive(speed * .9, rotation * -.9);
+        drivetrain.arcadeDrive(speed, rotation);
     }
 
     public void displayMotorControllerOutputCurrents() {
