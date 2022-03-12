@@ -49,6 +49,34 @@ public class Drive {
     private final double PULSES_TO_INCHES = 1 / 18.9231;
     private final double PULSES_TO_FEET = PULSES_TO_INCHES * 12;
 
+    private double[] inputHistory = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                };
+    private int inputIndex = 0;
+
     public void updateEncoderPIDValues() {
         encoderPIDLeft.setP(Preferences.getDouble("PID kP", 0.0));
         encoderPIDLeft.setI(Preferences.getDouble("PID kI", 0.0));
@@ -82,10 +110,12 @@ public class Drive {
         rightDriveEncoder.setDistancePerPulse(PULSES_TO_INCHES);
 
         // Also set drive motors ramp rate, don't ask why it's here
+        /*
         leftMotor1.configOpenloopRamp(.2);
         leftMotor2.configOpenloopRamp(.2);
         rightMotor1.configOpenloopRamp(.2);
         rightMotor2.configOpenloopRamp(.2);
+        */
     }
 
     public double getLeftEncoderDistance(){
@@ -246,6 +276,13 @@ public class Drive {
         double speed = OI.driveThrottle();
         double rotation = OI.driveRotation();
 
+        inputHistory[inputIndex % inputHistory.length] = speed;
+        double total = 0;
+        for (int i = 0; i < 50; i++) {
+            total += inputHistory[i];
+        }
+        double avgSpeed = total / inputHistory.length;
+
         // Square Inputs, keep values negative if they should be
         if (speed < 0) {
             speed = speed * speed * -1;
@@ -260,7 +297,7 @@ public class Drive {
         }
 
         // Give values to motor controllers
-        drivetrain.arcadeDrive(speed, rotation);
+        drivetrain.arcadeDrive(avgSpeed, rotation);
     }
 
     public void displayMotorControllerOutputCurrents() {
