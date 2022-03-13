@@ -22,10 +22,14 @@ public class Climb {
 
     public void setLock(Lock state) {
         if (state == Lock.unlocked) {
-            climbLock.setAngle(30);
+            climbLock.setAngle(0);
         } else {
-            climbLock.setAngle(50);
+            climbLock.setAngle(30);
         }
+    }
+
+    public double getLock() {
+        return climbLock.getAngle();
     }
 
     public boolean getLimitLower() {

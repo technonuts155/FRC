@@ -27,7 +27,8 @@ public class Shooter {
     enum RPM {      //black magic voodoo enum
         kHigh,      // Aim for high goal
         kLow,       // Aim for low goal
-        kStop       // Stop motor
+        kStop,      // Stop motor
+        kSendIt     // You just gotta send it
     }
 
     // Motor Controllers
@@ -40,6 +41,7 @@ public class Shooter {
     private RelativeEncoder shooterEncoder;
 
     // RPM setpoint constants for shooter control
+    private final double SEND_IT = 4500.0;
     private final double HIGH = 3700.0;
     private final double LOW = 2700.0;
     private final double STOP = 0;
@@ -110,6 +112,10 @@ public class Shooter {
                 upToSpeed = false;
                 break;
             
+            case kSendIt:
+                pid.setReference(SEND_IT, ControlType.kVelocity);
+                upToSpeed = Math.abs(SEND_IT - shooterEncoder.getVelocity()) <= 300;
+
             default:
                 break;
         }
@@ -163,22 +169,7 @@ public class Shooter {
 
     // Color Sensor
     public boolean ballIsLoaded() {
-        Color colorDetected = colorSensor.getColor();
-
-        SmartDashboard.putNumber("Red", colorDetected.red);
-        SmartDashboard.putNumber("Green", colorDetected.green);
-        SmartDashboard.putNumber("Blue", colorDetected.blue);
-
-        return (colorSensor.getIR() > 5);
-
-        /*
-        if (DriverStation.getAlliance() == DriverStation.Alliance.Red) {
-            return (colorDetected.red >= .38);
-        } else {
-            return (colorDetected.blue >= .30);
-        }
-        */
-
+        return (colorSensor.getIR() > 8);
     }
 
     public int getColorSensorIR() {

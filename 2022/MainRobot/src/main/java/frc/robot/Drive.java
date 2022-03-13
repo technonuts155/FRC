@@ -40,8 +40,8 @@ public class Drive {
 
     // PIDController for centering on target found by pixycam
     private PIDController pixyPID = new PIDController(0.015, 0.0, 0.001);
-    private PIDController encoderPIDLeft = new PIDController(0.008, 0.0005, 0);
-    private PIDController encoderPIDRight = new PIDController(0.008, 0.0005, 0);
+    private PIDController encoderPIDLeft = new PIDController(0.01, 0.0005, 0);
+    private PIDController encoderPIDRight = new PIDController(0.01, 0.0005, 0);
 
     // Encoders
     private Encoder leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A, RobotMap.LEFT_DRIVE_ENCODER_B);
@@ -49,32 +49,8 @@ public class Drive {
     private final double PULSES_TO_INCHES = 1 / 18.9231;
     private final double PULSES_TO_FEET = PULSES_TO_INCHES * 12;
 
-    private double[] inputHistory = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                };
+    // Add more zeros to this to increase throttle ramp rate
+    private double[] inputHistory = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private int inputIndex = 0;
 
     public void updateEncoderPIDValues() {
@@ -84,6 +60,9 @@ public class Drive {
         encoderPIDRight.setP(Preferences.getDouble("PID kP", 0.0));
         encoderPIDRight.setI(Preferences.getDouble("PID kI", 0.0));
         encoderPIDRight.setD(Preferences.getDouble("PID kD", 0.0));
+
+        SmartDashboard.putNumber("Left Motors", leftMotors.get());
+        SmartDashboard.putNumber("Right Motors", rightMotors.get());
     }
 
     public void encoderPIDDrive() {
@@ -94,7 +73,7 @@ public class Drive {
         }
 
         if (Math.abs(getLeftEncoderDistance()) > 5) {
-            leftMotors.set(-encoderPIDLeft.calculate(getLeftEncoderDistance(), 0));
+            leftMotors.set(encoderPIDLeft.calculate(getLeftEncoderDistance(), 0));
         } else {
             leftMotors.set(0);
         }
@@ -108,14 +87,6 @@ public class Drive {
     public void initializeEncoders(){
         leftDriveEncoder.setDistancePerPulse(PULSES_TO_INCHES);
         rightDriveEncoder.setDistancePerPulse(PULSES_TO_INCHES);
-
-        // Also set drive motors ramp rate, don't ask why it's here
-        /*
-        leftMotor1.configOpenloopRamp(.2);
-        leftMotor2.configOpenloopRamp(.2);
-        rightMotor1.configOpenloopRamp(.2);
-        rightMotor2.configOpenloopRamp(.2);
-        */
     }
 
     public double getLeftEncoderDistance(){
@@ -278,10 +249,11 @@ public class Drive {
 
         inputHistory[inputIndex % inputHistory.length] = speed;
         double total = 0;
-        for (int i = 0; i < 50; i++) {
-            total += inputHistory[i];
+        for (int i = 0; i < inputHistory.length; i++) {
+            total = total + inputHistory[i];
         }
-        double avgSpeed = total / inputHistory.length;
+        inputIndex++;
+        speed = total / inputHistory.length;
 
         // Square Inputs, keep values negative if they should be
         if (speed < 0) {
@@ -297,7 +269,7 @@ public class Drive {
         }
 
         // Give values to motor controllers
-        drivetrain.arcadeDrive(avgSpeed, rotation);
+        drivetrain.arcadeDrive(speed, -rotation);
     }
 
     public void displayMotorControllerOutputCurrents() {

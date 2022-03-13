@@ -87,6 +87,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
     SmartDashboard.putBoolean("Lower Climb Limit", climb.getLimitLower());
     SmartDashboard.putBoolean("Upper Climb Limit", climb.getLimitUpper());
+    drive.updateEncoderPIDValues();
     }
 
   /**
@@ -133,7 +134,7 @@ public class Robot extends TimedRobot {
         drive.setRightMotors(0);
         
         // Condition for changing cases
-        if (Timer.getFPGATimestamp() - startTime > 1.5 && Timer.getFPGATimestamp() - startTime < 5) {
+        if (Timer.getFPGATimestamp() - startTime > 1.5 && Timer.getFPGATimestamp() - startTime < 3) {
           currentState = AutoStates.collect;
         }
         break;
@@ -161,10 +162,10 @@ public class Robot extends TimedRobot {
         shooter.indexStop();
 
         // Condition for changing cases
-        if ((Math.abs(drive.getRightEncoderDistance()) < 5 && Math.abs(drive.getLeftEncoderDistance()) < 5) ||
-            Timer.getFPGATimestamp() - startTime > 12) {
+        if (Math.abs(drive.getRightEncoderDistance()) < 5 && Math.abs(drive.getLeftEncoderDistance()) < 5) {
           timeStamp = Timer.getFPGATimestamp();
           currentState = AutoStates.shoot;
+          //Change to stop if left encoder does not work
         }
         break;
 
@@ -177,11 +178,9 @@ public class Robot extends TimedRobot {
         shooter.setShooterRPM(Shooter.RPM.kStop);
 
         // Condition for changing cases
-        /*
         if (Timer.getFPGATimestamp() - timeStamp > .5) {
           currentState = AutoStates.reverse;
         }
-        */
         break;
     }
   }
@@ -235,9 +234,9 @@ public class Robot extends TimedRobot {
     }
 
     // Climber control
-    if (OI.climbUp() && climb.getLimitUpper() == false) {
+    if (OI.climbUp() && climb.getLimitUpper() == false && climb.getLock() < 10) {
       climb.setClimbUp();
-    } else if (OI.climbDown() && climb.getLimitLower() == false) {
+    } else if (OI.climbDown() && climb.getLimitLower() == false && climb.getLock() < 10) {
       climb.setClimbDown();
     } else {
       climb.setClimbStop();
@@ -266,6 +265,13 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
+    if (OI.driverController.getAButton()) {
+      shooter.setShooterRPM(Shooter.RPM.kSendIt);
+    } else {
+      shooter.setShooterRPM(Shooter.RPM.kStop);
+    }
 
+    System.out.println(shooter.isUpToSpeed());
+    System.out.println(shooter.getShooterRPM());
   }
 }
