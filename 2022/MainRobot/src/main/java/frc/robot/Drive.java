@@ -96,6 +96,7 @@ public class Drive {
 
     public void pixyAssistedDrive(double speed) {
         Block target = getTargetBlock();
+        speed = linearRamp(speed);
 
         if (target != null) {
             double turnRate = pixyPID.calculate(getBlockCenterX(target), 190);
@@ -164,10 +165,8 @@ public class Drive {
         } else {
             blocksFound = pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG2, 10);
         }
-        SmartDashboard.putNumber("Blocks Found", blocksFound);
 
         ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
-
         ArrayList<Block> ratioedBlocks = new ArrayList<Block>();
 
         // Create new list of only blocks that are square enough
