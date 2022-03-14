@@ -102,7 +102,7 @@ public class Drive {
             double turnRate = pixyPID.calculate(getBlockCenterX(target), 190);
             drivetrain.arcadeDrive(speed, turnRate);
         } else {
-            drivetrain.arcadeDrive(speed, OI.driveRotation() * -1);
+            drivetrain.arcadeDrive(speed, OI.driveRotation());
         }
     }
 
@@ -205,7 +205,7 @@ public class Drive {
         }
 
         // Give values to motor controllers
-        drivetrain.arcadeDrive(speed, -rotation);
+        drivetrain.arcadeDrive(speed, rotation);
     }
 
     public void stop() {

@@ -75,8 +75,9 @@ public class OI {
         return  driverController.getRawAxis(LEFT_THUMB_VERTICAL);
     }
 
+    // Make sure this is inverted here
     public static double driveRotation() {
-        return driverController.getRawAxis(RIGHT_THUMB_HORIZONTAL);
+        return -driverController.getRawAxis(RIGHT_THUMB_HORIZONTAL);
     }
 
     public static double shooterThrottle() {
