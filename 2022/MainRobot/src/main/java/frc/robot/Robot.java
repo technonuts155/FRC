@@ -211,7 +211,14 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    // These likely aren't needed here, but they're here just in case.
+    drive.stop();
+    shooter.intakeStop();
+    shooter.indexStop();
+    shooter.setShooterRPM(Shooter.RPM.kStop);
+    climb.stop();
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
