@@ -186,26 +186,7 @@ public class Drive {
     /** ---------- Manual Drive Methods ---------- */
 
     public void XboxDrive() {
-
-        // Read controller values
-        double speed = linearRamp(OI.driveThrottle());
-        double rotation = OI.driveRotation();
-
-        // Square Inputs, keep values negative if they should be
-        if (speed < 0) {
-            speed = speed * speed * -1;
-        } else {
-            speed = speed * speed;
-        }
-
-        if (rotation < 0) {
-            rotation = rotation * rotation * -1;
-        } else {
-            rotation = rotation * rotation; 
-        }
-
-        // Give values to motor controllers
-        drivetrain.arcadeDrive(speed, rotation);
+        drivetrain.arcadeDrive(linearRamp(OI.driveThrottle()), OI.driveRotation());
     }
 
     public void stop() {

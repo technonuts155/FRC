@@ -72,12 +72,28 @@ public class OI {
     }
 
     public static double driveThrottle() {
-        return  driverController.getRawAxis(LEFT_THUMB_VERTICAL);
+        double speed = driverController.getRawAxis(LEFT_THUMB_VERTICAL);
+
+        if (speed < 0) {
+            speed = speed * speed * -1;
+        } else {
+            speed = speed * speed;
+        }
+
+        return speed;
     }
 
     // Make sure this is inverted here
     public static double driveRotation() {
-        return -driverController.getRawAxis(RIGHT_THUMB_HORIZONTAL);
+        double rotation = driverController.getRawAxis(RIGHT_THUMB_HORIZONTAL);
+
+        if (rotation < 0) {
+            rotation = rotation * rotation * -1;
+        } else {
+            rotation = rotation * rotation; 
+        }
+
+        return -rotation;
     }
 
     public static double shooterThrottle() {
