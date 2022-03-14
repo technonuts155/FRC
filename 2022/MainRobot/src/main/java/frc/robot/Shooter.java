@@ -34,7 +34,6 @@ public class Shooter {
     // RPM setpoint constants for shooter control
     private final double HIGH = 3700.0;
     private final double LOW = 2700.0;
-    private final double STOP = 0;
 
     // Tolerance for shooter RPM and boolean for being within tolerance (shooter is up to speed)
     private final double tolerance = 100;   

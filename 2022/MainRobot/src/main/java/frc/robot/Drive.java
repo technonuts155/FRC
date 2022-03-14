@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.pseudoresonance.pixy2api.Pixy2;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 import io.github.pseudoresonance.pixy2api.links.SPILink;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 
@@ -36,7 +34,7 @@ public class Drive {
 
     // Pixycam
     private Pixy2 pixy;
-    private final double HORIZONTAL_CENTER = 157.5;
+    // private final double HORIZONTAL_CENTER = 157.5;
 
     // PIDControllers
     private PIDController pixyPID = new PIDController(0.015, 0.0, 0.001);
