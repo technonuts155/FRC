@@ -4,16 +4,9 @@
 
 package frc.robot;
 
-import java.sql.Time;
-import java.util.TimerTask;
-
-import javax.lang.model.util.ElementScanner6;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,20 +25,13 @@ public class Robot extends TimedRobot {
 
   AutoStates currentState;
 
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
   Shooter shooter = new Shooter();
   Drive drive = new Drive();
   Climb climb = new Climb();
 
-  // Don't worry about it
+  // Variables to hold time stamps during Autonomous
   double startTime = 0;
   double timeStamp = 0;
-
-  
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -53,21 +39,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Initalized the PixyDrivePID
-    drive.initializePixy();
-
-    // Drive motors need to be inverted manually now
-    drive.invertLeftDriveMotors();
-
-    // Initialize shooter Encoder and PID
-    shooter.initalizeEncoder();
-    shooter.initPID();
-
-    // Initialize drive encoders
-    drive.initializeEncoders();
-  
-    // Start climber servo in unlocked position
-    climb.setLock(Climb.Lock.unlocked);
+    climb.unlock();
   }
 
   /**
@@ -85,8 +57,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("At speed", shooter.isUpToSpeed());
     SmartDashboard.putNumber("ColorSensor IR", shooter.getColorSensorIR());
     SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
-    SmartDashboard.putBoolean("Lower Climb Limit", climb.getLimitLower());
-    SmartDashboard.putBoolean("Upper Climb Limit", climb.getLimitUpper());
+    SmartDashboard.putBoolean("Lower Climb Limit", climb.atBottom());
+    SmartDashboard.putBoolean("Upper Climb Limit", climb.atTop());
     drive.updateEncoderPIDValues();
     }
 
@@ -108,31 +80,21 @@ public class Robot extends TimedRobot {
     // Zero the encoders
     drive.resetEncoders();
 
+    // Get a system timestamp of the start of Autonomous
     startTime = Timer.getFPGATimestamp();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-
-    SmartDashboard.putNumber("Match time", Timer.getFPGATimestamp() - startTime);
-    SmartDashboard.putString("Auto State", currentState.toString());
-
     switch (currentState) {
       case shoot:
         // Actions in case
-        shooter.setShooterRPM(Shooter.RPM.kHigh);
-
-        if (shooter.isUpToSpeed()) {
-          shooter.indexForwards();
-        } else {
-          shooter.indexStop();
-        }
-
+        drive.stop();
         shooter.intakeStop();
-        drive.setLeftMotors(0);
-        drive.setRightMotors(0);
-        
+        shooter.setShooterRPM(Shooter.RPM.kHigh);
+        if (shooter.isUpToSpeed()) {shooter.indexForwards();} else {shooter.indexStop();}
+
         // Condition for changing cases
         if (Timer.getFPGATimestamp() - startTime > 1.5 && Timer.getFPGATimestamp() - startTime < 3) {
           currentState = AutoStates.collect;
@@ -141,7 +103,7 @@ public class Robot extends TimedRobot {
 
       case collect:
         // Actions in case
-        drive.pixyAutopilot(-.65);
+        drive.pixyAssistedDrive(-.65);
         shooter.intakeIn();
         shooter.indexForwardsSlow();
         shooter.setShooterRPM(Shooter.RPM.kStop);
@@ -156,7 +118,6 @@ public class Robot extends TimedRobot {
       case reverse:
         // Actions in case
         drive.encoderPIDDrive();
-
         shooter.setShooterRPM(Shooter.RPM.kStop);
         shooter.intakeStop();
         shooter.indexStop();
@@ -165,14 +126,12 @@ public class Robot extends TimedRobot {
         if (Math.abs(drive.getRightEncoderDistance()) < 5 && Math.abs(drive.getLeftEncoderDistance()) < 5) {
           timeStamp = Timer.getFPGATimestamp();
           currentState = AutoStates.shoot;
-          //Change to stop if left encoder does not work
         }
         break;
 
       case stop:
         // Actions in case
-        drive.setLeftMotors(0);
-        drive.setRightMotors(0);
+        drive.stop();
         shooter.indexStop();
         shooter.intakeStop();
         shooter.setShooterRPM(Shooter.RPM.kStop);
@@ -194,8 +153,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     // Drive control
-    if (OI.pixyAutopilot() == true) {
-      drive.pixyAutopilot(OI.driveThrottle());
+    if (OI.pixyAssistedDrive()) {
+      drive.pixyAssistedDrive(OI.driveThrottle());
     } else {
       drive.XboxDrive();
     }
@@ -203,7 +162,7 @@ public class Robot extends TimedRobot {
     // Intake Control
     if(OI.intakeOut()) {
       shooter.intakeOut();
-    } else if(OI.intakeIn() || shooter.isUpToSpeed() || OI.pixyAutopilot()) {
+    } else if(OI.intakeIn() || shooter.isUpToSpeed() || OI.pixyAssistedDrive()) {
       shooter.intakeIn();
     } else {
       shooter.intakeStop();
@@ -234,20 +193,16 @@ public class Robot extends TimedRobot {
     }
 
     // Climber control
-    if (OI.climbUp() && climb.getLimitUpper() == false && climb.getLock() < 10) {
-      climb.setClimbUp();
-    } else if (OI.climbDown() && climb.getLimitLower() == false && climb.getLock() < 10) {
-      climb.setClimbDown();
+    if (OI.climbExtend() && !climb.atTop() && !climb.isLocked()) {
+      climb.extend();
+    } else if (OI.climbRetract() && !climb.atBottom() && !climb.isLocked()) {
+      climb.retract();
     } else {
-      climb.setClimbStop();
+      climb.stop();
     }
 
-    if (OI.climbLock()) {
-      climb.setLock(Climb.Lock.locked);
-    }
-    if (OI.climbUnlock()) {
-      climb.setLock(Climb.Lock.unlocked);
-    }
+    if (OI.climbLock())   { climb.lock(); }
+    if (OI.climbUnlock()) { climb.unlock(); }
   }
 
   /** This function is called once when the robot is disabled. */
@@ -264,14 +219,5 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {
-    if (OI.driverController.getAButton()) {
-      shooter.setShooterRPM(Shooter.RPM.kSendIt);
-    } else {
-      shooter.setShooterRPM(Shooter.RPM.kStop);
-    }
-
-    System.out.println(shooter.isUpToSpeed());
-    System.out.println(shooter.getShooterRPM());
-  }
+  public void testPeriodic() {}
 }

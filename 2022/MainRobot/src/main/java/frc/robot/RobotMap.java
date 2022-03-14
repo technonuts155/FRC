@@ -24,10 +24,8 @@ public class RobotMap {
     public static final int BEAM_BREAK = 4;
     public static final int CLIMB_LIMIT_SWITCH_LOW = 8;
     public static final int CLIMB_LIMIT_SWITCH_UPPER = 9;
-    public static final int CLIMB_LIMIT_SWITCH_MIDDLE = 7;
     
     // Analog Inputs
-    
 
     // Solenoids
 

@@ -1,34 +1,25 @@
 package frc.robot;
 
 
-import java.util.Set;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxAlternateEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 
 
 public class Shooter {
 
     // Control states for the shooter flywheel
-    enum RPM {      //black magic voodoo enum
+    enum RPM {      // Black magic voodoo enum
         kHigh,      // Aim for high goal
         kLow,       // Aim for low goal
-        kStop,      // Stop motor
-        kSendIt     // You just gotta send it
+        kStop       // Stop motor
     }
 
     // Motor Controllers
@@ -41,7 +32,6 @@ public class Shooter {
     private RelativeEncoder shooterEncoder;
 
     // RPM setpoint constants for shooter control
-    private final double SEND_IT = 4500.0;
     private final double HIGH = 3700.0;
     private final double LOW = 2700.0;
     private final double STOP = 0;
@@ -49,20 +39,11 @@ public class Shooter {
     // Tolerance for shooter RPM and boolean for being within tolerance (shooter is up to speed)
     private final double tolerance = 100;   
     private boolean upToSpeed = false;
-    
-    //Beam Break lmao
-    DigitalInput beamBreak = new DigitalInput(RobotMap.BEAM_BREAK);
 
-    // Color sensor (better beambreak)
+    // Color sensor
     ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
     
-
-    public void setShooterPercentOutput(double output) {
-        shooterMotor.set(output);
-    }
-
-    // PID functions
-    public void initPID() {
+    public Shooter() {
         pid = shooterMotor.getPIDController();
         pid.setP(0.0003);
         pid.setI(0);
@@ -72,28 +53,12 @@ public class Shooter {
         pid.setOutputRange(-1, 1);
         pid.setFeedbackDevice(shooterEncoder);
 
-    }
-
-    public void updatePIDValues() {
-        pid.setP(Preferences.getDouble("pid kP", 0.0));
-        pid.setI(Preferences.getDouble("pid kI", 0.0));
-        pid.setD(Preferences.getDouble("pid kD", 0.0));
-        pid.setIZone(Preferences.getDouble("pid IZone", 0.0));
-        pid.setFF(Preferences.getDouble("pid FF", 0.0));
-    }
-    
-    public void initalizeEncoder() {
         shooterEncoder = shooterMotor.getEncoder();
     }
 
-    public double getShooterRPM() {
-        return shooterEncoder.getVelocity();
-    }
 
-    public boolean isUpToSpeed() {
-        return upToSpeed;
-    }
-    
+    /** ---------- Shooter Methods ---------- */
+
     public void setShooterRPM(Shooter.RPM rpm) {
         // Set RPM reference and update upToSpeed boolean
         switch (rpm) {
@@ -111,10 +76,6 @@ public class Shooter {
                 shooterMotor.set(0);
                 upToSpeed = false;
                 break;
-            
-            case kSendIt:
-                pid.setReference(SEND_IT, ControlType.kVelocity);
-                upToSpeed = Math.abs(SEND_IT - shooterEncoder.getVelocity()) <= 300;
 
             default:
                 break;
@@ -125,7 +86,29 @@ public class Shooter {
         return shooterMotor.getMotorTemperature();
     }
 
-    //Intake Functions
+    public void setShooterPercentOutput(double output) {
+        shooterMotor.set(output);
+    }
+
+    public double getShooterRPM() {
+        return shooterEncoder.getVelocity();
+    }
+
+    public boolean isUpToSpeed() {
+        return upToSpeed;
+    }
+
+    public void updatePIDValues() {
+        pid.setP(Preferences.getDouble("pid kP", 0.0));
+        pid.setI(Preferences.getDouble("pid kI", 0.0));
+        pid.setD(Preferences.getDouble("pid kD", 0.0));
+        pid.setIZone(Preferences.getDouble("pid IZone", 0.0));
+        pid.setFF(Preferences.getDouble("pid FF", 0.0));
+    }
+
+
+    /** ---------- Intake Methods ---------- */
+
     public double getIntakeSpeed() {
         return intakeMotor.getMotorOutputPercent();
     }
@@ -141,11 +124,14 @@ public class Shooter {
         intakeMotor.set(ControlMode.PercentOutput, 0);
     }
 
-    // Index functions 
+
+    /** ---------- Indexer Methods ---------- */
+
     public double getIndexSpeed() {
         return indexerMotor.getMotorOutputPercent();
     }
 
+    /** Moves the belt up slow enough for the color sensor to recognize a ball */
     public void indexForwardsSlow() {
         indexerMotor.set(ControlMode.PercentOutput, .4);
     }
@@ -161,13 +147,10 @@ public class Shooter {
     public void indexStop() {
         indexerMotor.set(ControlMode.PercentOutput, 0);
     }
-    
-    // Beambreak
-    public boolean getBeamBreak() {
-        return beamBreak.get();
-    }
 
-    // Color Sensor
+
+    /** ---------- Color Sensor Methods ---------- */
+
     public boolean ballIsLoaded() {
         return (colorSensor.getIR() > 8);
     }
