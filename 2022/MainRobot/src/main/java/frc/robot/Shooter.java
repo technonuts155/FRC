@@ -43,6 +43,7 @@ public class Shooter {
     ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
     
     public Shooter() {
+        shooterEncoder = shooterMotor.getEncoder();
         pid = shooterMotor.getPIDController();
         pid.setP(0.0003);
         pid.setI(0);
@@ -51,8 +52,6 @@ public class Shooter {
         pid.setFF(0.00019);
         pid.setOutputRange(-1, 1);
         pid.setFeedbackDevice(shooterEncoder);
-
-        shooterEncoder = shooterMotor.getEncoder();
     }
 
 
