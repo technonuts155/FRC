@@ -8,11 +8,6 @@ import edu.wpi.first.wpilibj.Servo;
 
 public class Climb {
 
-    enum Lock {
-        locked,
-        unlocked
-    }
-
     private VictorSPX climbMotor1 = new VictorSPX(RobotMap.CLIMB_MOTOR_1);
     private VictorSPX climbMotor2 = new VictorSPX(RobotMap.CLIMB_MOTOR_2);
     private DigitalInput lower = new DigitalInput(RobotMap.CLIMB_LIMIT_SWITCH_LOW);
