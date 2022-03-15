@@ -19,17 +19,13 @@ import java.util.ArrayList;
 
 public class Drive {
 
-    // Motor Controllers
+    // Motor Controllers and drivetrain
     private WPI_VictorSPX leftMotor1 = new WPI_VictorSPX(RobotMap.LEFT_DRIVE_1);
     private WPI_VictorSPX leftMotor2 = new WPI_VictorSPX(RobotMap.LEFT_DRIVE_2);
     private WPI_VictorSPX rightMotor1 = new WPI_VictorSPX(RobotMap.RIGHT_DRIVE_1);
     private WPI_VictorSPX rightMotor2 = new WPI_VictorSPX(RobotMap.RIGHT_DRIVE_2);
-
-    // Group left and right motors
     private MotorControllerGroup leftMotors = new MotorControllerGroup(leftMotor1, leftMotor2);
     private MotorControllerGroup rightMotors = new MotorControllerGroup(rightMotor1, rightMotor2);
-
-    // Create drivetrain object
     private DifferentialDrive drivetrain = new DifferentialDrive(leftMotors, rightMotors);
 
     // Pixycam
