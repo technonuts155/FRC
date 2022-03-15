@@ -193,16 +193,16 @@ public class Robot extends TimedRobot {
     }
 
     // Climber control
-    if (OI.climbExtend() && !climb.atTop() && !climb.isLocked()) {
+    if (OI.climbExtend() && !climb.atTop()) {
+      climb.unlock();
       climb.extend();
-    } else if (OI.climbRetract() && !climb.atBottom() && !climb.isLocked()) {
+    } else if (OI.climbRetract() && !climb.atBottom()) {
+      climb.unlock();
       climb.retract();
     } else {
       climb.stop();
+      climb.lock();
     }
-
-    if (OI.climbLock())   { climb.lock(); }
-    if (OI.climbUnlock()) { climb.unlock(); }
   }
 
   /** This function is called once when the robot is disabled. */

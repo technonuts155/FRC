@@ -21,7 +21,7 @@ public class Climb {
     private boolean isLocked = false;
 
     public Climb() {
-        unlock();
+        lock();
     }
 
     public void lock() {
