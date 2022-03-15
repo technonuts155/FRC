@@ -171,7 +171,7 @@ public class Robot extends TimedRobot {
     // Indexer control
     if(OI.moveIndexUp() || shooter.isUpToSpeed()) {
       shooter.indexForwards();
-    } else if (shooter.getIntakeSpeed() < -.5 && shooter.ballIsLoaded() == false) {
+    } else if ((OI.intakeIn() || OI.pixyAssistedDrive()) && shooter.ballIsLoaded() == false) {
       shooter.indexForwardsSlow();
     } else if (OI.moveIndexDown()) {
       shooter.indexBackwards();
