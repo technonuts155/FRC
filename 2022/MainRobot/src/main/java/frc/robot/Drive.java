@@ -156,20 +156,16 @@ public class Drive {
 
     public Block getTargetBlock() {
 
-        // Getting block cache doesn't work if you don't get block count first
-        int blocksFound;
+        // Get blocks based on alliance color
         if (DriverStation.getAlliance() == Alliance.Blue) {
-            blocksFound = pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG1, 10);
+            pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG1, 10);
         } else {
-            blocksFound = pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG2, 10);
+            pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG2, 10);
         }
-
         ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
-        ArrayList<Block> ratioedBlocks = new ArrayList<Block>();
 
-        // Create new list of only blocks that are square enough
-        // Perfectly identified cargo should be a square because
-        // a bounding box drawn around a circle is a square.
+        // Create new list of only blocks that are within Height/Width ratio tolerance
+        ArrayList<Block> ratioedBlocks = new ArrayList<Block>();
         for(Block block : blocks) {
             if(matchesBlockRatioHW(block, .5) == true) {
                 ratioedBlocks.add(block);
