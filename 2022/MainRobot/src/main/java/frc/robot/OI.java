@@ -40,19 +40,17 @@ public class OI {
         return operatorController.getRawButton(X_BUTTON);
     }
 
+    // ^ operator is a 'XOR' operator, exclusive-or. Meaning it will return true if ONLY one condition is met, not both.
+    // In this case, shootLow will return true if either trigger is held, but not when both are held.
     public static boolean shootLow() { 
-        return (operatorController.getRightTriggerAxis() > .5 || operatorController.getLeftTriggerAxis() > .5);
+        return (operatorController.getRightTriggerAxis() > .5 ^ operatorController.getLeftTriggerAxis() > .5);
     }
 
     public static boolean shootHigh() { 
         return (operatorController.getRightTriggerAxis() > .5 && operatorController.getLeftTriggerAxis() > .5);
      }
 
-    public static boolean hang() {
-        return false;
-    }
-
-    public static boolean pixyAutopilot() {
+    public static boolean pixyAssistedDrive() {
         return driverController.getLeftBumper();
     }
 
@@ -73,27 +71,40 @@ public class OI {
         return operatorController.getRawButton(Y_BUTTON);
     }
 
-    public static boolean collectionAssist() {
-        return driverController.getRawButton(SELECT_BUTTON) == true;
-    }
-
     public static double driveThrottle() {
-        return  driverController.getRawAxis(LEFT_THUMB_VERTICAL);
+        double speed = driverController.getRawAxis(LEFT_THUMB_VERTICAL);
+
+        if (speed < 0) {
+            speed = speed * speed * -1;
+        } else {
+            speed = speed * speed;
+        }
+
+        return speed;
     }
 
+    // Make sure this is inverted here
     public static double driveRotation() {
-        return driverController.getRawAxis(RIGHT_THUMB_HORIZONTAL);
+        double rotation = driverController.getRawAxis(RIGHT_THUMB_HORIZONTAL);
+
+        if (rotation < 0) {
+            rotation = rotation * rotation * -1;
+        } else {
+            rotation = rotation * rotation; 
+        }
+
+        return -rotation;
     }
 
     public static double shooterThrottle() {
         return operatorController.getRawAxis(LEFT_THUMB_VERTICAL);
     }
     
-    public static boolean climbUp() {
+    public static boolean climbExtend() {
         return operatorController.getPOV() == D_PAD_UP;
     }
 
-    public static boolean climbDown() {
+    public static boolean climbRetract() {
         return operatorController.getPOV() == D_PAD_DOWN;
     }
 

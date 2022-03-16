@@ -8,49 +8,53 @@ import edu.wpi.first.wpilibj.Servo;
 
 public class Climb {
 
-    enum Lock {
-        locked,
-        unlocked
-    }
-
+    // Motors
     private VictorSPX climbMotor1 = new VictorSPX(RobotMap.CLIMB_MOTOR_1);
     private VictorSPX climbMotor2 = new VictorSPX(RobotMap.CLIMB_MOTOR_2);
+
+    // Limit Switches
     private DigitalInput lower = new DigitalInput(RobotMap.CLIMB_LIMIT_SWITCH_LOW);
     private DigitalInput upper = new DigitalInput(RobotMap.CLIMB_LIMIT_SWITCH_UPPER);
-    private DigitalInput middle = new DigitalInput(RobotMap.CLIMB_LIMIT_SWITCH_MIDDLE);
+
+    // Locking servo and state boolean
     private Servo climbLock = new Servo(RobotMap.CLIMB_SERVO);
+    private boolean isLocked = false;
 
-    public void setLock(Lock state) {
-        if (state == Lock.unlocked) {
-            climbLock.setAngle(0);
-        } else {
-            climbLock.setAngle(30);
-        }
+    public Climb() {
+        lock();
     }
 
-    public double getLock() {
-        return climbLock.getAngle();
+    public void lock() {
+        climbLock.setAngle(30);
+        isLocked = true;
     }
 
-    public boolean getLimitLower() {
+    public void unlock() {
+        climbLock.setAngle(0);
+        isLocked = false;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public boolean atBottom() {
         return lower.get();
     }
-    public boolean getLimitUpper() {
+    public boolean atTop() {
         return upper.get();
     }
-    public boolean getLimitMiddle() {
-        return middle.get();
-    }
-    public void setClimbUp() {
+
+    public void extend() {
         climbMotor1.set(ControlMode.PercentOutput, -.75);
         climbMotor2.set(ControlMode.PercentOutput, -.75);
     }
 
-    public void setClimbDown() {
+    public void retract() {
         climbMotor1.set(ControlMode.PercentOutput, .75);
         climbMotor2.set(ControlMode.PercentOutput, .75);
     }
-    public void setClimbStop() {
+    public void stop() {
         climbMotor1.set(ControlMode.PercentOutput, 0.0);
         climbMotor2.set(ControlMode.PercentOutput, 0.0);
     }
