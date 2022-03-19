@@ -12,43 +12,61 @@ import io.github.pseudoresonance.pixy2api.Pixy2;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 import io.github.pseudoresonance.pixy2api.links.SPILink;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Drive {
-
+        
     // Motor Controllers and drivetrain
-    private WPI_VictorSPX leftMotor1 = new WPI_VictorSPX(RobotMap.LEFT_DRIVE_1);
-    private WPI_VictorSPX leftMotor2 = new WPI_VictorSPX(RobotMap.LEFT_DRIVE_2);
-    private WPI_VictorSPX rightMotor1 = new WPI_VictorSPX(RobotMap.RIGHT_DRIVE_1);
-    private WPI_VictorSPX rightMotor2 = new WPI_VictorSPX(RobotMap.RIGHT_DRIVE_2);
+    private CANSparkMax leftMotor1 = new CANSparkMax(RobotMap.LEFT_DRIVE_1, MotorType.kBrushless);
+    private CANSparkMax leftMotor2 = new CANSparkMax(RobotMap.LEFT_DRIVE_2, MotorType.kBrushless);
+    private CANSparkMax rightMotor1 = new CANSparkMax(RobotMap.RIGHT_DRIVE_1, MotorType.kBrushless);
+    private CANSparkMax rightMotor2 = new CANSparkMax(RobotMap.RIGHT_DRIVE_2, MotorType.kBrushless);
+    
     private MotorControllerGroup leftMotors = new MotorControllerGroup(leftMotor1, leftMotor2);
     private MotorControllerGroup rightMotors = new MotorControllerGroup(rightMotor1, rightMotor2);
     private DifferentialDrive drivetrain = new DifferentialDrive(leftMotors, rightMotors);
 
-    // Pixycam
+    // Cameras
     private Pixy2 pixy;
-    // private final double HORIZONTAL_CENTER = 157.5;
+    private PhotonCamera hubCam = new PhotonCamera("HUB Cam");
+
+    private boolean isCenteredOnHub = false;
 
     // PIDControllers
     private PIDController pixyPID = new PIDController(0.015, 0.0, 0.001);
     private PIDController encoderPIDLeft = new PIDController(0.01, 0.0005, 0);
     private PIDController encoderPIDRight = new PIDController(0.01, 0.0005, 0);
+    private PIDController hubPID = new PIDController(0, 0, 0);
 
     // Encoders
-    private Encoder leftDriveEncoder = new Encoder(RobotMap.LEFT_DRIVE_ENCODER_A, RobotMap.LEFT_DRIVE_ENCODER_B);
-    private Encoder rightDriveEncoder = new Encoder(RobotMap.RIGHT_DRIVE_ENCODER_A, RobotMap.RIGHT_DRIVE_ENCODER_B);
     private final double PULSES_TO_INCHES = 1 / 18.9231;
+    private RelativeEncoder leftEncoder1;
+    private RelativeEncoder leftEncoder2;
+    private RelativeEncoder rightEncoder1;
+    private RelativeEncoder rightEncoder2;
 
     // Add more zeros to this to decrease throttle ramp rate
     private double[] inputHistory = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private int inputIndex = 0;
 
     public Drive() {
-        leftDriveEncoder.setDistancePerPulse(PULSES_TO_INCHES);
-        rightDriveEncoder.setDistancePerPulse(PULSES_TO_INCHES);
+        leftEncoder1 = leftMotor1.getEncoder();
+        leftEncoder2 = leftMotor2.getEncoder();
+        rightEncoder1 = rightMotor1.getEncoder();
+        rightEncoder2 = rightMotor2.getEncoder();
 
         pixy = Pixy2.createInstance(new SPILink());
         pixy.init();
@@ -56,7 +74,47 @@ public class Drive {
         leftMotors.setInverted(true);
     }
 
-    /** ---------- Encoders & Encoder Drive Methods ---------- */
+    /** ---------- HUB PID Methods ---------- */
+
+    public void updateHubPIDValues() {
+        hubPID.setP(Preferences.getDouble("PID kP", 0.0));
+        hubPID.setI(Preferences.getDouble("PID kI", 0.0));
+        hubPID.setD(Preferences.getDouble("PID kD", 0.0));
+
+    }
+
+    public void test() {
+        PhotonPipelineResult result = hubCam.getLatestResult();
+        List<PhotonTrackedTarget> targets = result.getTargets();
+        PhotonTrackedTarget bestTarget = result.getBestTarget();
+
+    }
+
+
+    //We want this one
+    public boolean hasHubTargets(){
+        return hubCam.getLatestResult().hasTargets();
+    }
+
+
+     public void centerOnHub(double speed) {
+        PhotonPipelineResult result = hubCam.getLatestResult();
+        if(result.hasTargets() == false) {
+            drivetrain.arcadeDrive(speed, OI.driveRotation());
+            isCenteredOnHub = false;
+        } else {
+            PhotonTrackedTarget target = result.getBestTarget();
+            drivetrain.arcadeDrive(speed, hubPID.calculate(target.getYaw()));
+            isCenteredOnHub = Math.abs(target.getYaw()) < 2;
+        }
+
+     }
+
+     public boolean isCenteredOnHub() {
+         return isCenteredOnHub;
+     }
+
+    /** ---------- Encoders & Encoder PID Methods ---------- */
 
     public void encoderPIDDrive() {
             rightMotors.set(encoderPIDRight.calculate(getRightEncoderDistance(), 0));
@@ -64,16 +122,15 @@ public class Drive {
     }
 
     public void resetEncoders() {
-        leftDriveEncoder.reset();
-        rightDriveEncoder.reset();
+        // Need a workaround since NEO encoders have no reset method
     }
 
     public double getLeftEncoderDistance(){
-        return leftDriveEncoder.getDistance();
+        return leftEncoder1.getPosition();
     }
 
     public double getRightEncoderDistance(){
-        return rightDriveEncoder.getDistance();
+        return rightEncoder1.getPosition();
     }
 
     public void updateEncoderPIDValues() {

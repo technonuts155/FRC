@@ -28,6 +28,7 @@ public class OI {
     public static final int RIGHT_THUMB_VERTICAL = 5;
     public static final int RIGHT_ANALOG_TRIGGER = 3;
     public static final int LEFT_ANALOG_TRIGGER = 2;
+
     
 
 
@@ -114,5 +115,9 @@ public class OI {
 
     public static boolean climbUnlock() {
         return operatorController.getRightBumper();
+    }
+
+    public static boolean hubAssistedDrive() {
+        return driverController.getRightBumper();
     }
 }

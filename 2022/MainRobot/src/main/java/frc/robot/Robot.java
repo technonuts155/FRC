@@ -20,7 +20,8 @@ public class Robot extends TimedRobot {
     shoot,
     collect,
     reverse,
-    stop
+    stop,
+    aim
   }
 
   AutoStates currentState;
@@ -51,15 +52,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putNumber("Left Encoder distance", drive.getLeftEncoderDistance());
-    SmartDashboard.putNumber("Right Encoder distance", drive.getRightEncoderDistance());
     SmartDashboard.putBoolean("Ball loaded", shooter.ballIsLoaded());
     SmartDashboard.putBoolean("At speed", shooter.isUpToSpeed());
     SmartDashboard.putNumber("ColorSensor IR", shooter.getColorSensorIR());
     SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
-    SmartDashboard.putBoolean("Lower Climb Limit", climb.atBottom());
-    SmartDashboard.putBoolean("Upper Climb Limit", climb.atTop());
-    drive.updateEncoderPIDValues();
+    SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
+    SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
+
     }
 
   /**
@@ -141,7 +140,19 @@ public class Robot extends TimedRobot {
           currentState = AutoStates.reverse;
         }
         break;
-    }
+      
+      case aim:
+        //Actions
+        shooter.indexStop();
+        shooter.indexStop();
+        shooter.setShooterRPM(Shooter.RPM.kStop);
+        drive.centerOnHub(0);
+
+        //Condition for changing
+        if(drive.isCenteredOnHub()) {
+          currentState = AutoStates.shoot;
+        }
+      }
   }
 
   /** This function is called once when teleop is enabled. */
@@ -155,6 +166,8 @@ public class Robot extends TimedRobot {
     // Drive control
     if (OI.pixyAssistedDrive()) {
       drive.pixyAssistedDrive(OI.driveThrottle());
+    } else if(OI.hubAssistedDrive()){
+      drive.centerOnHub(OI.driveThrottle());
     } else {
       drive.XboxDrive();
     }

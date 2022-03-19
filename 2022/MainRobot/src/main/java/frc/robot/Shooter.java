@@ -30,6 +30,7 @@ public class Shooter {
     // PID Controller and Encoder for controlling the shooter motor
     private SparkMaxPIDController pid;
     private RelativeEncoder shooterEncoder;
+  
 
     // RPM setpoint constants for shooter control
     private final double HIGH = 3700.0;
@@ -44,6 +45,7 @@ public class Shooter {
     
     public Shooter() {
         shooterEncoder = shooterMotor.getEncoder();
+
         pid = shooterMotor.getPIDController();
         pid.setP(0.0003);
         pid.setI(0);
@@ -97,11 +99,10 @@ public class Shooter {
     }
 
     public void updatePIDValues() {
-        pid.setP(Preferences.getDouble("pid kP", 0.0));
-        pid.setI(Preferences.getDouble("pid kI", 0.0));
-        pid.setD(Preferences.getDouble("pid kD", 0.0));
-        pid.setIZone(Preferences.getDouble("pid IZone", 0.0));
-        pid.setFF(Preferences.getDouble("pid FF", 0.0));
+        pid.setP(Preferences.getDouble("PID kP", 0.0));
+        pid.setI(Preferences.getDouble("PID kI", 0.0));
+        pid.setD(Preferences.getDouble("PID kD", 0.0));
+        pid.setFF(Preferences.getDouble("PID FF", 0.0));
     }
 
 

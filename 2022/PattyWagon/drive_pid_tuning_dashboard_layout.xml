@@ -1,29 +1,5 @@
 <xml version="1.0">
 <dashboard>
-	<widget field="ColorSensor IR" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="75"/>
-	</widget>
-	<widget field="Target aquired" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
-		<location x="453" y="102"/>
-		<width>175</width>
-		<height>89</height>
-	</widget>
-	<widget field="At speed" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
-		<location x="14" y="217"/>
-		<width>178</width>
-		<height>100</height>
-	</widget>
-	<widget field="Shooter RPM" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="54"/>
-	</widget>
-	<widget field="Shooter at setpoint" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="33"/>
-	</widget>
-	<widget field="Ball loaded" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
-		<location x="260" y="134"/>
-		<width>108</width>
-		<height>50</height>
-	</widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Label">
 		<location x="298" y="388"/>
 		<property name="Text" value="Right Motors Input"/>
@@ -35,18 +11,6 @@
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.ConnectionIndicator">
 		<location x="1" y="0"/>
 	</static-widget>
-	<widget field="Ratio Blocks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="605" y="74"/>
-	</widget>
-	<widget field="Color Blocks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="607" y="50"/>
-	</widget>
-	<widget field="All blocks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="621" y="28"/>
-	</widget>
-	<widget field="Blocks Found" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="603" y="6"/>
-	</widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.RobotPreferences">
 		<location x="473" y="235"/>
 	</static-widget>
@@ -56,84 +20,7 @@
 		<height>390</height>
 		<property name="Camera Choice" value=""/>
 	</static-widget>
-	<widget field="Right Encoder distance" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="17" y="132"/>
-		<height>20</height>
-	</widget>
-	<widget field="Left Encoder distance" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="17" y="108"/>
-	</widget>
-	<widget field="Blue" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="225" y="48"/>
-	</widget>
-	<widget field="Green" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="216" y="73"/>
-	</widget>
-	<widget field="Red" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="221" y="25"/>
-	</widget>
-	<widget field="Upper Climb Limit" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="3" y="21"/>
-	</widget>
-	<widget field="Lower Climb Limit" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="13" y="27"/>
-	</widget>
 </dashboard>
 <live-window>
-	<widget field="Ungrouped" type="LW Subsystem" class="edu.wpi.first.smartdashboard.livewindow.elements.LWSubsystem">
-		<widget field="Encoder[1]" type="Quadrature Encoder" class="edu.wpi.first.smartdashboard.livewindow.elements.EncoderDisplay">
-			<location x="6" y="16"/>
-			<height>97</height>
-			<width>293</width>
-		</widget>
-		<widget field="DigitalInput[4]" type="Digital Input" class="edu.wpi.first.smartdashboard.livewindow.elements.DigitalInputDisplay">
-			<location x="6" y="113"/>
-			<height>20</height>
-			<width>293</width>
-		</widget>
-		<widget field="DigitalInput[8]" type="Digital Input" class="edu.wpi.first.smartdashboard.livewindow.elements.DigitalInputDisplay">
-			<location x="6" y="133"/>
-			<height>20</height>
-			<width>293</width>
-		</widget>
-		<widget field="PIDController[3]" type="PIDController" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
-			<location x="6" y="153"/>
-			<height>155</height>
-			<width>293</width>
-		</widget>
-		<widget field="PIDController[1]" type="PIDController" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
-			<location x="6" y="308"/>
-			<height>155</height>
-			<width>293</width>
-		</widget>
-		<widget field="Encoder[0]" type="Quadrature Encoder" class="edu.wpi.first.smartdashboard.livewindow.elements.EncoderDisplay">
-			<location x="6" y="463"/>
-			<height>97</height>
-			<width>293</width>
-		</widget>
-		<widget field="DigitalInput[7]" type="Digital Input" class="edu.wpi.first.smartdashboard.livewindow.elements.DigitalInputDisplay">
-			<location x="6" y="560"/>
-			<height>20</height>
-			<width>293</width>
-		</widget>
-		<widget field="DigitalInput[9]" type="Digital Input" class="edu.wpi.first.smartdashboard.livewindow.elements.DigitalInputDisplay">
-			<location x="6" y="580"/>
-			<height>20</height>
-			<width>293</width>
-		</widget>
-		<widget field="PIDController[2]" type="PIDController" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
-			<location x="6" y="600"/>
-			<height>155</height>
-			<width>293</width>
-		</widget>
-		<widget field="Servo[9]" type="Servo" class="edu.wpi.first.smartdashboard.livewindow.elements.ServoController">
-			<location x="6" y="755"/>
-			<height>45</height>
-			<width>293</width>
-		</widget>
-		<location x="26" y="5"/>
-		<width>305</width>
-		<height>806</height>
-	</widget>
 </live-window>
 </xml>
