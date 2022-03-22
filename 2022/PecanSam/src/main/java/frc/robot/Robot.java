@@ -62,7 +62,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
     Block target = drive.getTargetBlock();
     // Show on dashboard how many blue targets are found
     SmartDashboard.putBoolean("Block found", target != null);
