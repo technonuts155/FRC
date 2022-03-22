@@ -143,7 +143,7 @@ public class Drive {
     public void invertRightDriveMotors() {
         rightMotors.setInverted(true);
     }
-
+  
     public void pixyAutopilot() {
         Block target = getTargetBlock();
 
@@ -165,14 +165,17 @@ public class Drive {
         SmartDashboard.putNumber("P", drivePID.getP());
         SmartDashboard.putNumber("I", drivePID.getI());
         SmartDashboard.putNumber("D", drivePID.getD());
+
     }
 
     public void XboxDrive() {
 
+        speedLimitControl();
+
         // Read controller values
         double rightTriggerAxis = OI.driveController.getRightTriggerAxis();
         double leftTriggerAxis = OI.driveController.getLeftTriggerAxis();
-        double speed = rightTriggerAxis - leftTriggerAxis;
+        double speed = OI.driveController.getRawAxis(1) * -1;
         double rotation = OI.driveController.getRawAxis(4);
 
         // Square Inputs, keep values negative if they should be
@@ -189,7 +192,7 @@ public class Drive {
         }
 
         // Give values to motor controllers
-        drivetrain.arcadeDrive(speed, rotation * .75);
+        drivetrain.arcadeDrive(speed * speedLimit, rotation * .50 * speedLimit);
     }
 
     public void displayMotorControllerOutputCurrents() {
