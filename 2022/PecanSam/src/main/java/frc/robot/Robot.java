@@ -38,19 +38,6 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-
-    // Differential drive no longer inverts right motors by default as of 2022
-    drive.invertRightDriveMotors();
-
-    // Initialize Pixycam
-    drive.initializePixy();
-  
-    // Start camera stream for dashboard
-    CameraServer.startAutomaticCapture();
-
-    // INit pixycam pid setpoint and tolerance
-    drive.setPIDSetpoint(190);
-    drive.setPIDTolerance(5);
   }
 
   /**
@@ -62,16 +49,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    Block target = drive.getTargetBlock();
-    // Show on dashboard how many blue targets are found
-    SmartDashboard.putBoolean("Block found", target != null);
 
-    if(target != null) {
-      SmartDashboard.putNumber("Targets X Value:", target.getX());
-      SmartDashboard.putNumber("Targets Y Value", target.getY());
-      SmartDashboard.putNumber("Targets Width:", target.getWidth());
-      SmartDashboard.putNumber("Targets Height", target.getHeight());
-    }
   }
 
   /**
@@ -114,20 +92,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    // Autopilot with pixycam while A button is held
-    // Normal drive otherwise
-    if (OI.driveController.getRawButton(10)) {
-      drive.pixyAutopilot();
-      intake.set(-1);
-    } else {
-      drive.XboxDrive();
-      intake.set(0);
-    }
+    drive.XboxDrive();
 
-    // Reset drive PID when leaving autopilot
-    if (OI.driveController.getRawButtonReleased(10)) {
-      drive.resetPID();
-    }
   }
 
   /** This function is called once when the robot is disabled. */

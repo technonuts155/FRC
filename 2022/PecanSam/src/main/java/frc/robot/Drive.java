@@ -37,6 +37,10 @@ public class Drive {
     // PIDController for centering on target found by pixycam
     private PIDController drivePID = new PIDController(0.0, 0.0, 0.0);
 
+    public Drive() {
+        leftMotors.setInverted(true);
+    }
+
     public void resetPID() {
         drivePID.reset();
     }
@@ -170,9 +174,7 @@ public class Drive {
     public void XboxDrive() {
 
         // Read controller values
-        double rightTriggerAxis = OI.driveController.getRightTriggerAxis();
-        double leftTriggerAxis = OI.driveController.getLeftTriggerAxis();
-        double speed = rightTriggerAxis - leftTriggerAxis;
+        double speed = OI.driveController.getRawAxis(1);
         double rotation = OI.driveController.getRawAxis(4);
 
         // Square Inputs, keep values negative if they should be
@@ -189,7 +191,7 @@ public class Drive {
         }
 
         // Give values to motor controllers
-        drivetrain.arcadeDrive(speed, rotation * .75);
+        drivetrain.arcadeDrive(speed, -rotation * .75);
     }
 
     public void displayMotorControllerOutputCurrents() {
