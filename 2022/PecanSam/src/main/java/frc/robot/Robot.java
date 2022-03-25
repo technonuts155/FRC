@@ -8,8 +8,13 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
@@ -28,7 +33,9 @@ public class Robot extends TimedRobot {
   private WPI_TalonSRX intake = new WPI_TalonSRX(2);
 
   Drive drive = new Drive();
-
+  
+  DoubleSolenoid solenoidA = new DoubleSolenoid(12, PneumaticsModuleType.CTREPCM, RobotMap.solenoidA_1, RobotMap.solenoidA_2);
+  DoubleSolenoid solenoidB = new DoubleSolenoid(12, PneumaticsModuleType.CTREPCM, RobotMap.solenoidB_1, RobotMap.solenoidB_2);
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -38,6 +45,9 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    solenoidA.set(Value.kReverse);
+    solenoidB.set(Value.kReverse);
   }
 
   /**
@@ -93,6 +103,13 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     drive.XboxDrive();
+
+    if (OI.driveController.getXButtonPressed()) {
+      solenoidA.toggle();
+    }
+    if (OI.driveController.getBButtonPressed()) {
+      solenoidB.toggle();
+    }
 
   }
 
