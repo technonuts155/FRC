@@ -4,10 +4,18 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -32,10 +40,16 @@ public class Robot extends TimedRobot {
 
   private WPI_TalonSRX intake = new WPI_TalonSRX(2);
 
-  Drive drive = new Drive();
+  double target_height = Units.inchesToMeters(104);
+  double camera_height = Units.inchesToMeters(37);
+  double camera_pitch = Units.degreesToRadians(50);
+
+  //Drive drive = new Drive();
   
-  DoubleSolenoid solenoidA = new DoubleSolenoid(12, PneumaticsModuleType.CTREPCM, RobotMap.solenoidA_1, RobotMap.solenoidA_2);
-  DoubleSolenoid solenoidB = new DoubleSolenoid(12, PneumaticsModuleType.CTREPCM, RobotMap.solenoidB_1, RobotMap.solenoidB_2);
+  //DoubleSolenoid solenoidA = new DoubleSolenoid(12, PneumaticsModuleType.CTREPCM, RobotMap.solenoidA_1, RobotMap.solenoidA_2);
+  //DoubleSolenoid solenoidB = new DoubleSolenoid(12, PneumaticsModuleType.CTREPCM, RobotMap.solenoidB_1, RobotMap.solenoidB_2);
+
+  PhotonCamera hubCam = new PhotonCamera("HUB Cam");
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -46,8 +60,10 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    solenoidA.set(Value.kReverse);
-    solenoidB.set(Value.kReverse);
+    
+
+    //solenoidA.set(Value.kReverse);
+    //solenoidB.set(Value.kReverse);
   }
 
   /**
@@ -59,7 +75,33 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    PhotonPipelineResult result = hubCam.getLatestResult();
+    boolean hasTargets = result.hasTargets();
+    SmartDashboard.putBoolean("Has Targets", hasTargets);
 
+    if (hasTargets) {
+      List<PhotonTrackedTarget> targets = result.getTargets();
+      SmartDashboard.putNumber("# Targets", targets.size());
+
+      PhotonTrackedTarget bestTarget = result.getBestTarget();
+      
+      double pitch = bestTarget.getPitch();
+      double yaw = bestTarget.getYaw();
+      double area = bestTarget.getArea();
+
+      double distance = PhotonUtils.calculateDistanceToTargetMeters(camera_height,
+                                                                    target_height,
+                                                                    camera_pitch,
+                                                                    Units.degreesToRadians(pitch));
+
+      
+
+
+      SmartDashboard.putNumber("Pitch", pitch);
+      SmartDashboard.putNumber("Yaw", yaw);
+      SmartDashboard.putNumber("Area", area);
+      SmartDashboard.putNumber("Distance", Units.metersToFeet(distance));
+    }
   }
 
   /**
@@ -102,6 +144,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    /*
     drive.XboxDrive();
 
     if (OI.driveController.getXButtonPressed()) {
@@ -110,6 +153,7 @@ public class Robot extends TimedRobot {
     if (OI.driveController.getBButtonPressed()) {
       solenoidB.toggle();
     }
+    */
 
   }
 
