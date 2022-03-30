@@ -64,7 +64,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
     drive.displayMotorControllerInputs();
-
     }
 
   /**
@@ -177,6 +176,7 @@ public class Robot extends TimedRobot {
     } else {
       drive.XboxDrive();
     }
+
 
     // Intake Control
     if(OI.intakeOut()) {
