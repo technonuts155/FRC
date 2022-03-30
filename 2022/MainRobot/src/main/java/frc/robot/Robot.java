@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,6 +36,9 @@ public class Robot extends TimedRobot {
   double startTime = 0;
   double timeStamp = 0;
 
+  // Debouncer for climber. Gives the lock a half second to move before the lift begins movement
+  Debouncer climbDebouncer = new Debouncer(.5, DebounceType.kRising);
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -58,6 +63,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
     SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
+    drive.displayMotorControllerInputs();
 
     }
 
@@ -208,10 +214,10 @@ public class Robot extends TimedRobot {
     // Climber control
     if (OI.climbExtend() && !climb.atTop()) {
       climb.unlock();
-      climb.extend();
+      if (climbDebouncer.calculate(OI.climbExtend())) {climb.extend();}
     } else if (OI.climbRetract() && !climb.atBottom()) {
       climb.unlock();
-      climb.retract();
+      if (climbDebouncer.calculate(OI.climbRetract())) {climb.retract();}
     } else {
       climb.stop();
       climb.lock();
