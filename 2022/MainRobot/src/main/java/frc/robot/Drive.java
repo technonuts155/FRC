@@ -58,19 +58,28 @@ public class Drive {
     private RelativeEncoder rightEncoder1;
     private RelativeEncoder rightEncoder2;
 
-    // Add more zeros to this to decrease throttle ramp rate
-    private double[] inputHistory = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    // openRampRate is time in milliseconds to reach full speed when being manually driven
+    private int openRampRate = 500;
+    private double[] inputHistory = new double[(int)(openRampRate / 20)];
     private int inputIndex = 0;
 
     public Drive() {
+        // Initialize input history array for ramp rate
+        for (int i = 0; i < inputHistory.length; i++) {
+            inputHistory[i] = 0;
+        }
+
+        // Get encoders from motor controllers
         leftEncoder1 = leftMotor1.getEncoder();
         leftEncoder2 = leftMotor2.getEncoder();
         rightEncoder1 = rightMotor1.getEncoder();
         rightEncoder2 = rightMotor2.getEncoder();
 
+        // Initialize Pixy
         pixy = Pixy2.createInstance(new SPILink());
         pixy.init();
 
+        // Invert motors on one side
         leftMotors.setInverted(true);
     }
 
@@ -80,7 +89,6 @@ public class Drive {
         hubPID.setP(Preferences.getDouble("PID kP", 0.0));
         hubPID.setI(Preferences.getDouble("PID kI", 0.0));
         hubPID.setD(Preferences.getDouble("PID kD", 0.0));
-
     }
 
     public void test() {
