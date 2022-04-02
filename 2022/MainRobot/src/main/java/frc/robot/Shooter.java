@@ -10,7 +10,11 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 
 public class Shooter {
@@ -26,6 +30,11 @@ public class Shooter {
     private CANSparkMax shooterMotor = new CANSparkMax(RobotMap.SHOOTER_MOTOR, MotorType.kBrushless);
     private VictorSPX indexerMotor = new VictorSPX(RobotMap.INDEXER_MOTOR);
     private VictorSPX intakeMotor = new VictorSPX(RobotMap.INTAKE_MOTOR);
+    private VictorSPX gathererMotor = new VictorSPX(RobotMap.GATHERER_MOTOR);
+
+    // Solenoids
+    private DoubleSolenoid solenoidA = new DoubleSolenoid(RobotMap.PCM, PneumaticsModuleType.CTREPCM, RobotMap.SOL1_SLOT_A, RobotMap.SOL1_SLOT_B);
+    private DoubleSolenoid solenoidB = new DoubleSolenoid(RobotMap.PCM, PneumaticsModuleType.CTREPCM, RobotMap.SOL2_SLOT_A, RobotMap.SOL2_SLOT_B); 
 
     // PID Controller and Encoder for controlling the shooter motor
     private SparkMaxPIDController pid;
@@ -54,6 +63,8 @@ public class Shooter {
         pid.setFF(0.00019);
         pid.setOutputRange(-1, 1);
         pid.setFeedbackDevice(shooterEncoder);
+
+        gathererRetract();
     }
 
 
@@ -104,6 +115,26 @@ public class Shooter {
         pid.setD(Preferences.getDouble("PID kD", 0.0));
         pid.setFF(Preferences.getDouble("PID FF", 0.0));
     }
+
+    /** --------- Gatherer Methods --------- */
+    public void gathererIn() {
+        gathererMotor.set(ControlMode.PercentOutput, -.5);
+    }
+    public void gathererOut() {
+        gathererMotor.set(ControlMode.PercentOutput, .5);
+    }
+    public void gathererStop() {
+        gathererMotor.set(ControlMode.PercentOutput, 0);
+    }
+    public void gathererDeploy() {
+        solenoidA.set(Value.kForward);
+        solenoidB.set(Value.kForward);
+    }
+    public void gathererRetract() {
+        solenoidA.set(Value.kReverse);
+        solenoidB.set(Value.kReverse);
+    }
+
 
 
     /** ---------- Intake Methods ---------- */

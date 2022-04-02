@@ -64,6 +64,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
     drive.displayMotorControllerInputs();
+    drive.updateHubPIDValues();
     }
 
   /**
@@ -86,6 +87,9 @@ public class Robot extends TimedRobot {
 
     // Get a system timestamp of the start of Autonomous
     startTime = Timer.getFPGATimestamp();
+
+    // Makes sure gatherer arm is up for the start of the game
+    shooter.gathererRetract();
   }
 
   /** This function is called periodically during autonomous. */
@@ -177,7 +181,6 @@ public class Robot extends TimedRobot {
       drive.XboxDrive();
     }
 
-
     // Intake Control
     if(OI.intakeOut()) {
       shooter.intakeOut();
@@ -186,6 +189,16 @@ public class Robot extends TimedRobot {
     } else {
       shooter.intakeStop();
     }
+
+    // Gatherer Control
+    if(OI.intakeIn()) {
+      shooter.gathererIn();
+      shooter.gathererDeploy();
+    } else {
+      shooter.gathererStop();
+      shooter.gathererRetract();
+    }
+
 
     // Indexer control
     if(OI.moveIndexUp() || shooter.isUpToSpeed()) {

@@ -49,7 +49,7 @@ public class Drive {
     private PIDController pixyPID = new PIDController(0.015, 0.0, 0.001);
     private PIDController encoderPIDLeft = new PIDController(0.008, 0.001, 0.001);
     private PIDController encoderPIDRight = new PIDController(0.008, 0.001, 0.001);
-    private PIDController hubPID = new PIDController(0, 0, 0);
+    private PIDController hubPID = new PIDController(0.03, 0.002, 0.0005);
 
     // Encoders
     private final double PULSES_TO_INCHES = 1 / 18.9231;
@@ -116,11 +116,11 @@ public class Drive {
      public void centerOnHub(double speed) {
         PhotonPipelineResult result = hubCam.getLatestResult();
         if(result.hasTargets() == false) {
-            drivetrain.arcadeDrive(speed, OI.driveRotation());
+            drivetrain.arcadeDrive(linearRamp(speed), OI.driveRotation());
             isCenteredOnHub = false;
         } else {
             PhotonTrackedTarget target = result.getBestTarget();
-            drivetrain.arcadeDrive(speed, hubPID.calculate(target.getYaw()));
+            drivetrain.arcadeDrive(linearRamp(speed), hubPID.calculate(target.getYaw()));
             isCenteredOnHub = Math.abs(target.getYaw()) < 2;
         }
 
