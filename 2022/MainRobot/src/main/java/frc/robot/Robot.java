@@ -125,13 +125,13 @@ public class Robot extends TimedRobot {
       
       case reverse:
         // Actions in case
-        drive.encoderPIDDrive();
+        drive.centerOnHub(.65);
         shooter.setShooterRPM(Shooter.RPM.kStop);
         shooter.intakeStop();
         shooter.indexStop();
 
         // Condition for changing cases
-        if (Math.abs(drive.getRightEncoderDistance()) < 5 && Math.abs(drive.getLeftEncoderDistance()) < 5) {
+        if (Math.abs(drive.getRightEncoderDistance()) < 5 || Math.abs(drive.getLeftEncoderDistance()) < 5) {
           timeStamp = Timer.getFPGATimestamp();
           currentState = AutoStates.shoot;
         }
