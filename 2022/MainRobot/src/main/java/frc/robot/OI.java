@@ -94,7 +94,7 @@ public class OI {
             rotation = rotation * rotation; 
         }
 
-        return -rotation;
+        return -rotation * .7;
     }
 
     public static double shooterThrottle() {

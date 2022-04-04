@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -39,7 +40,6 @@ public class Shooter {
     // PID Controller and Encoder for controlling the shooter motor
     private SparkMaxPIDController pid;
     private RelativeEncoder shooterEncoder;
-  
 
     // RPM setpoint constants for shooter control
     private final double HIGH = 3700.0;
@@ -49,8 +49,10 @@ public class Shooter {
     private final double tolerance = 100;   
     private boolean upToSpeed = false;
 
-    // Color sensor
+    // Color sensor and Beam Breaks
     ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+    DigitalInput beamBreakHigh = new DigitalInput(RobotMap.BEAM_BREAK_HIGH);
+    DigitalInput beamBreakLow = new DigitalInput(RobotMap.BEAM_BREAK_LOW);
     
     public Shooter() {
         shooterEncoder = shooterMotor.getEncoder();
@@ -118,10 +120,10 @@ public class Shooter {
 
     /** --------- Gatherer Methods --------- */
     public void gathererIn() {
-        gathererMotor.set(ControlMode.PercentOutput, -.5);
+        gathererMotor.set(ControlMode.PercentOutput, .5);
     }
     public void gathererOut() {
-        gathererMotor.set(ControlMode.PercentOutput, .5);
+        gathererMotor.set(ControlMode.PercentOutput, -.5);
     }
     public void gathererStop() {
         gathererMotor.set(ControlMode.PercentOutput, 0);
@@ -143,11 +145,11 @@ public class Shooter {
         return intakeMotor.getMotorOutputPercent();
     }
     public void intakeOut() {
-        intakeMotor.set(ControlMode.PercentOutput, 0.75);
+        intakeMotor.set(ControlMode.PercentOutput, 1);
     }
 
     public void intakeIn() {
-        intakeMotor.set(ControlMode.PercentOutput, -0.75);
+        intakeMotor.set(ControlMode.PercentOutput, -1);
     }
 
     public void intakeStop() {
@@ -180,6 +182,13 @@ public class Shooter {
 
 
     /** ---------- Color Sensor Methods ---------- */
+    public boolean getBeamBreakLow() {
+        return beamBreakLow.get();
+    }
+
+    public boolean getBeamBreakHigh() {
+        return beamBreakHigh.get();
+    }
 
     public boolean ballIsLoaded() {
         return (colorSensor.getIR() > 8);

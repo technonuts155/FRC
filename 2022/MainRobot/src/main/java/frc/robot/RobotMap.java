@@ -19,11 +19,8 @@ public class RobotMap {
     public static final int CLIMB_SERVO = 9;
 
     // Digital Inputs
-    public static final int RIGHT_DRIVE_ENCODER_A = 0;
-    public static final int RIGHT_DRIVE_ENCODER_B = 1;
-    public static final int LEFT_DRIVE_ENCODER_A = 2;
-    public static final int LEFT_DRIVE_ENCODER_B = 3;
-    public static final int BEAM_BREAK = 4;
+    public static final int BEAM_BREAK_LOW = 1;
+    public static final int BEAM_BREAK_HIGH = 2;
     public static final int CLIMB_LIMIT_SWITCH_LOW = 8;
     public static final int CLIMB_LIMIT_SWITCH_UPPER = 9;
     

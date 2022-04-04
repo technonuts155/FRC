@@ -8,6 +8,7 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -63,8 +64,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
     SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
     SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
+    SmartDashboard.putBoolean("Beam", shooter.getBeamBreakLow());
     drive.displayMotorControllerInputs();
-    drive.updateHubPIDValues();
     }
 
   /**
@@ -113,8 +114,10 @@ public class Robot extends TimedRobot {
         // Actions in case
         drive.pixyAssistedDrive(-.65);
         shooter.intakeIn();
-        shooter.indexForwardsSlow();
+        shooter.indexForwards();
         shooter.setShooterRPM(Shooter.RPM.kStop);
+        shooter.gathererDeploy();
+        shooter.gathererIn();
 
         // Condition for changing cases
         if(shooter.ballIsLoaded() == true) {
@@ -143,6 +146,8 @@ public class Robot extends TimedRobot {
         shooter.indexStop();
         shooter.intakeStop();
         shooter.setShooterRPM(Shooter.RPM.kStop);
+        shooter.gathererRetract();
+        shooter.gathererStop();
 
         // Condition for changing cases
         if (Timer.getFPGATimestamp() - timeStamp > .5) {
@@ -234,6 +239,19 @@ public class Robot extends TimedRobot {
     } else {
       climb.stop();
       climb.lock();
+    }
+
+    // Rumble City
+    if (drive.isCenteredOnHub()) {
+      OI.driverController.setRumble(RumbleType.kLeftRumble, .75);
+      OI.driverController.setRumble(RumbleType.kRightRumble, .75);
+      OI.operatorController.setRumble(RumbleType.kLeftRumble, .75);
+      OI.operatorController.setRumble(RumbleType.kRightRumble, .75);
+    } else {
+      OI.driverController.setRumble(RumbleType.kLeftRumble, 0);
+      OI.driverController.setRumble(RumbleType.kRightRumble, 0);
+      OI.operatorController.setRumble(RumbleType.kLeftRumble, 0);
+      OI.operatorController.setRumble(RumbleType.kRightRumble, 0);
     }
   }
 

@@ -64,6 +64,8 @@ public class Drive {
     private int openRampRate = 600;
     private double[] inputHistory = new double[(int)(openRampRate / 20)];
     private int inputIndex = 0;
+    private double prevInput = 0;
+    private double maxInputChange = .035;
 
     public Drive() {
         // Initialize input history array for ramp rate
@@ -116,12 +118,12 @@ public class Drive {
      public void centerOnHub(double speed) {
         PhotonPipelineResult result = hubCam.getLatestResult();
         if(result.hasTargets() == false) {
-            drivetrain.arcadeDrive(linearRamp(speed), OI.driveRotation());
+            drivetrain.arcadeDrive(maxChangeRamp(speed), OI.driveRotation());
             isCenteredOnHub = false;
         } else {
             PhotonTrackedTarget target = result.getBestTarget();
-            drivetrain.arcadeDrive(linearRamp(speed), hubPID.calculate(target.getYaw()));
-            isCenteredOnHub = Math.abs(target.getYaw()) < 2;
+            drivetrain.arcadeDrive(maxChangeRamp(speed), hubPID.calculate(target.getYaw()));
+            isCenteredOnHub = Math.abs(target.getYaw()) < 4;
         }
 
      }
@@ -168,9 +170,9 @@ public class Drive {
 
         if (target != null) {
             double turnRate = pixyPID.calculate(getBlockCenterX(target), 190);
-            drivetrain.arcadeDrive(speed, turnRate);
+            drivetrain.arcadeDrive(maxChangeRamp(speed), turnRate);
         } else {
-            drivetrain.arcadeDrive(speed, OI.driveRotation());
+            drivetrain.arcadeDrive(maxChangeRamp(speed), OI.driveRotation());
         }
     }
 
@@ -225,11 +227,18 @@ public class Drive {
     public Block getTargetBlock() {
 
         // Get blocks based on alliance color
+        /**
         if (DriverStation.getAlliance() == Alliance.Blue) {
             pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG1, 10);
         } else {
             pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG2, 10);
         }
+        */
+
+        // Getting red AND blue during drive practice
+        pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG1, 10);
+        pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG2, 10);
+
         ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
 
         // Create new list of only blocks that are within Height/Width ratio tolerance
@@ -248,11 +257,12 @@ public class Drive {
     /** ---------- Manual Drive Methods ---------- */
 
     public void XboxDrive() {
-        drivetrain.arcadeDrive(linearRamp(OI.driveThrottle()), OI.driveRotation() * .8);
+        drivetrain.arcadeDrive(maxChangeRamp(OI.driveThrottle()), OI.driveRotation());
+        isCenteredOnHub = false;
     }
 
     public void stop() {
-        drivetrain.arcadeDrive(0, 0);
+        drivetrain.arcadeDrive(maxChangeRamp(0), 0);
     }
 
     /** 
@@ -267,6 +277,24 @@ public class Drive {
         }
         inputIndex++;
         return total / inputHistory.length;
+    }
+    
+    private double maxChangeRamp(double input) {
+        if (input < prevInput) {
+            if (input < prevInput - maxInputChange) {
+                prevInput -= maxInputChange;
+            } else {
+                prevInput = input;
+            }
+        } else {
+            if (input > prevInput + maxInputChange) {
+                prevInput += maxInputChange;
+            } else {
+                prevInput = input;
+            }
+        }
+
+        return prevInput;
     }
 
     public void displayMotorControllerInputs() {
