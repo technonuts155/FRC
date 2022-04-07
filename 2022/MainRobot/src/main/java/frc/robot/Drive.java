@@ -42,7 +42,6 @@ public class Drive {
 
     // Cameras
     private Pixy2 pixy;
-    private PhotonCamera hubCam = new PhotonCamera("HUB Cam");
     private boolean isCenteredOnHub = false;
 
     // PIDControllers
@@ -52,7 +51,6 @@ public class Drive {
     private PIDController hubPID = new PIDController(0.03, 0.002, 0.0005);
 
     // Encoders
-    private final double PULSES_TO_INCHES = 1 / 18.9231;
     private RelativeEncoder leftEncoder1;
     private RelativeEncoder leftEncoder2;
     private RelativeEncoder rightEncoder1;
@@ -60,19 +58,10 @@ public class Drive {
     private double leftZero = 0;
     private double rightZero = 0;
 
-    // openRampRate is time in milliseconds to reach full speed when being manually driven
-    private int openRampRate = 600;
-    private double[] inputHistory = new double[(int)(openRampRate / 20)];
-    private int inputIndex = 0;
     private double prevInput = 0;
     private double maxInputChange = .035;
 
     public Drive() {
-        // Initialize input history array for ramp rate
-        for (int i = 0; i < inputHistory.length; i++) {
-            inputHistory[i] = 0;
-        }
-
         // Set firmware settings for motor controllers
         for (CANSparkMax motor : motors) {
             motor.restoreFactoryDefaults();
@@ -103,29 +92,15 @@ public class Drive {
         hubPID.setD(Preferences.getDouble("PID kD", 0.0));
     }
 
-    public void test() {
-        PhotonPipelineResult result = hubCam.getLatestResult();
-        List<PhotonTrackedTarget> targets = result.getTargets();
-        PhotonTrackedTarget bestTarget = result.getBestTarget();
-
-    }
-
-    //We want this one
-    public boolean hasHubTargets(){
-        return hubCam.getLatestResult().hasTargets();
-    }
-
      public void centerOnHub(double speed) {
-        PhotonPipelineResult result = hubCam.getLatestResult();
-        if(result.hasTargets() == false) {
+        if(Vision.hasTargets() == false) {
             drivetrain.arcadeDrive(maxChangeRamp(speed), OI.driveRotation());
             isCenteredOnHub = false;
         } else {
-            PhotonTrackedTarget target = result.getBestTarget();
+            PhotonTrackedTarget target = Vision.getBestTarget();
             drivetrain.arcadeDrive(maxChangeRamp(speed), hubPID.calculate(target.getYaw()));
             isCenteredOnHub = Math.abs(target.getYaw()) < 4;
         }
-
      }
 
      public boolean isCenteredOnHub() {
@@ -166,7 +141,7 @@ public class Drive {
 
     public void pixyAssistedDrive(double speed) {
         Block target = getTargetBlock();
-        speed = linearRamp(speed);
+        speed = maxChangeRamp(speed);
 
         if (target != null) {
             double turnRate = pixyPID.calculate(getBlockCenterX(target), 190);
@@ -263,20 +238,6 @@ public class Drive {
 
     public void stop() {
         drivetrain.arcadeDrive(maxChangeRamp(0), 0);
-    }
-
-    /** 
-     * Averages the input values for the last ~200ms.
-     * Results in a linear acceleration
-     */
-    private double linearRamp(double input) {
-        inputHistory[inputIndex % inputHistory.length] = input;
-        double total = 0;
-        for (int i = 0; i < inputHistory.length; i++) {
-            total = total + inputHistory[i];
-        }
-        inputIndex++;
-        return total / inputHistory.length;
     }
     
     private double maxChangeRamp(double input) {

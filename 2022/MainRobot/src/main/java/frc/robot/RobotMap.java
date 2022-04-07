@@ -20,7 +20,7 @@ public class RobotMap {
 
     // Digital Inputs
     public static final int BEAM_BREAK_LOW = 1;
-    public static final int BEAM_BREAK_HIGH = 2;
+    public static final int BEAM_BREAK_HIGH = 0;
     public static final int CLIMB_LIMIT_SWITCH_LOW = 8;
     public static final int CLIMB_LIMIT_SWITCH_UPPER = 9;
     

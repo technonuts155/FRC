@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -58,14 +59,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    SmartDashboard.putBoolean("Ball loaded", shooter.ballIsLoaded());
-    SmartDashboard.putBoolean("At speed", shooter.isUpToSpeed());
-    SmartDashboard.putNumber("ColorSensor IR", shooter.getColorSensorIR());
-    SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
-    SmartDashboard.putNumber("Left Encoder Distance", drive.getLeftEncoderDistance());
-    SmartDashboard.putNumber("Right Encoder Distance", drive.getRightEncoderDistance());
-    SmartDashboard.putBoolean("Beam", shooter.getBeamBreakLow());
-    drive.displayMotorControllerInputs();
+      Vision.updatePipelineResult();
+      SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
+      if (Vision.hasTargets()) {
+        SmartDashboard.putNumber("Distance", Vision.distanceFromHub());
+      }
+
+      SmartDashboard.putBoolean("Up to Speed", shooter.isUpToSpeed());
+      shooter.updatePIDValues();
     }
 
   /**
@@ -114,7 +115,7 @@ public class Robot extends TimedRobot {
         // Actions in case
         drive.pixyAssistedDrive(-.65);
         shooter.intakeIn();
-        shooter.indexForwards();
+        shooter.indexForwardsSlow();
         shooter.setShooterRPM(Shooter.RPM.kStop);
         shooter.gathererDeploy();
         shooter.gathererIn();
@@ -204,18 +205,17 @@ public class Robot extends TimedRobot {
       shooter.gathererRetract();
     }
 
-
     // Indexer control
     if(OI.moveIndexUp() || shooter.isUpToSpeed()) {
       shooter.indexForwards();
-    } else if ((OI.intakeIn() || OI.pixyAssistedDrive()) && shooter.ballIsLoaded() == false) {
+    } else if ((OI.intakeIn() || OI.pixyAssistedDrive()) && shooter.getBeamBreakHigh() == false) {
       shooter.indexForwardsSlow();
     } else if (OI.moveIndexDown()) {
       shooter.indexBackwards();
     } else {
       shooter.indexStop();
     }
- 
+
     // Shooter control
     if (OI.shooterManualOverride()) {
       shooter.setShooterPercentOutput(OI.shooterThrottle());
@@ -223,7 +223,10 @@ public class Robot extends TimedRobot {
       if (OI.shootHigh()) {
         shooter.setShooterRPM(Shooter.RPM.kHigh); 
       } else if (OI.shootLow()) {
-        shooter.setShooterRPM(Shooter.RPM.kLow);
+        if (Vision.hasTargets())
+          shooter.setShooterRPM((int)Vision.distanceFromHub());
+        else
+          shooter.setShooterPercentOutput(0);
       } else {
         shooter.setShooterRPM(Shooter.RPM.kStop);;
       }
@@ -242,7 +245,7 @@ public class Robot extends TimedRobot {
     }
 
     // Rumble City
-    if (drive.isCenteredOnHub()) {
+    if (drive.isCenteredOnHub() && Vision.distanceFromHub() >= 3 && Vision.distanceFromHub() <= 9.5) {
       OI.driverController.setRumble(RumbleType.kLeftRumble, .75);
       OI.driverController.setRumble(RumbleType.kRightRumble, .75);
       OI.operatorController.setRumble(RumbleType.kLeftRumble, .75);
