@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-      // This line needs to be here
+      // Vision.updatePipelineResult() needs to be called here or vision tracking will fail
       Vision.updatePipelineResult();
     }
 
@@ -83,6 +83,7 @@ public class Robot extends TimedRobot {
 
     // Get a system timestamp of the start of Autonomous
     startTime = Timer.getFPGATimestamp();
+    timeStamp = startTime;
 
     // Makes sure gatherer arm is up for the start of the game
     shooter.gathererRetract();
@@ -96,7 +97,15 @@ public class Robot extends TimedRobot {
         // Actions in case
         drive.stop();
         shooter.intakeStop();
-        shooter.setShooterRPM(Shooter.RPM.kDynamic);
+        shooter.gathererRetract();
+        shooter.gathererStop();
+
+        if (Timer.getFPGATimestamp() - timeStamp < 3) {
+          shooter.setShooterRPM(Shooter.RPM.kStatic);
+        } else {
+          shooter.setShooterRPM(Shooter.RPM.kStop);
+        }
+        
         if (shooter.isUpToSpeed()) {
           shooter.indexForwards();
         } else {
@@ -111,7 +120,7 @@ public class Robot extends TimedRobot {
 
       case collect:
         // Actions in case
-        drive.pixyAssistedDrive(-.55);
+        drive.pixyAssistedDrive(-.5);
         shooter.intakeIn();
         shooter.indexForwardsSlow();
         shooter.setShooterRPM(Shooter.RPM.kStop);
@@ -127,13 +136,13 @@ public class Robot extends TimedRobot {
       
       case reverse:
         // Actions in case
-        drive.centerOnHub(.55);
+        drive.centerOnHub(.5);
         shooter.setShooterRPM(Shooter.RPM.kStop);
         shooter.intakeStop();
         shooter.indexStop();
 
         // Condition for changing cases
-        if (Math.abs(drive.getRightEncoderDistance()) < 10 || Math.abs(drive.getLeftEncoderDistance()) < 10) {
+        if (Math.abs(drive.getRightEncoderDistance()) < 5 || Math.abs(drive.getLeftEncoderDistance()) < 5) {
           timeStamp = Timer.getFPGATimestamp();
           currentState = AutoStates.shoot;
         }
