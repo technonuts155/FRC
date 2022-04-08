@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -11,19 +10,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.github.pseudoresonance.pixy2api.Pixy2;
 import io.github.pseudoresonance.pixy2api.Pixy2CCC.Block;
 import io.github.pseudoresonance.pixy2api.links.SPILink;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Drive {
         
@@ -202,17 +194,11 @@ public class Drive {
     public Block getTargetBlock() {
 
         // Get blocks based on alliance color
-        /**
         if (DriverStation.getAlliance() == Alliance.Blue) {
             pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG1, 10);
         } else {
             pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG2, 10);
         }
-        */
-
-        // Getting red AND blue during drive practice
-        pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG1, 10);
-        pixy.getCCC().getBlocks(false, pixy.getCCC().CCC_SIG2, 10);
 
         ArrayList<Block> blocks = pixy.getCCC().getBlockCache();
 
