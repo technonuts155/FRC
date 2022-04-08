@@ -21,17 +21,21 @@ public class Climb {
     private boolean isLocked = false;
 
     public Climb() {
-        lock();
+        unlock();
     }
 
     public void lock() {
-        climbLock.setAngle(30);
+        climbLock.setAngle(90);
         isLocked = true;
     }
 
     public void unlock() {
         climbLock.setAngle(0);
         isLocked = false;
+    }
+
+    public double getServoAngle() {
+        return climbLock.get();
     }
 
     public boolean isLocked() {
@@ -43,6 +47,10 @@ public class Climb {
     }
     public boolean atTop() {
         return upper.get();
+    }
+
+    public void setLockAngle(double angle) {
+        climbLock.setAngle(angle);
     }
 
     public void extend() {

@@ -28,6 +28,7 @@ public class OI {
     public static final int RIGHT_THUMB_VERTICAL = 5;
     public static final int RIGHT_ANALOG_TRIGGER = 3;
     public static final int LEFT_ANALOG_TRIGGER = 2;
+
     
 
 
@@ -41,12 +42,12 @@ public class OI {
     }
 
     // ^ operator is a 'XOR' operator, exclusive-or. Meaning it will return true if ONLY one condition is met, not both.
-    // In this case, shootLow will return true if either trigger is held, but not when both are held.
-    public static boolean shootLow() { 
+    // In this case, shootDynamicRPM will return true if either trigger is held, but not when both are held.
+    public static boolean shootDynamicRPM() { 
         return (operatorController.getRightTriggerAxis() > .5 ^ operatorController.getLeftTriggerAxis() > .5);
     }
 
-    public static boolean shootHigh() { 
+    public static boolean shootStaticRPM() { 
         return (operatorController.getRightTriggerAxis() > .5 && operatorController.getLeftTriggerAxis() > .5);
      }
 
@@ -93,7 +94,7 @@ public class OI {
             rotation = rotation * rotation; 
         }
 
-        return -rotation;
+        return -rotation * .7;
     }
 
     public static double shooterThrottle() {
@@ -114,5 +115,9 @@ public class OI {
 
     public static boolean climbUnlock() {
         return operatorController.getRightBumper();
+    }
+
+    public static boolean hubAssistedDrive() {
+        return driverController.getRightBumper();
     }
 }
