@@ -88,7 +88,7 @@ public class Shooter {
             case kDynamic:
                 if (Vision.hasTargets() && Vision.distanceFromHub() > 3 && Vision.distanceFromHub() < 7) {
                     double distance = Vision.distanceFromHub();
-                    double RPM = rpmTable[(int)distance] + (rpmTable[(int)distance + 1] - rpmTable[(int)distance] * (distance % 1));
+                    double RPM = rpmTable[(int)distance] + ((rpmTable[(int)distance + 1] - rpmTable[(int)distance]) * (distance % 1));
                     pid.setReference(RPM, ControlType.kVelocity);
                     upToSpeed = Math.abs(RPM - shooterEncoder.getVelocity()) <= tolerance;
                 } else {
