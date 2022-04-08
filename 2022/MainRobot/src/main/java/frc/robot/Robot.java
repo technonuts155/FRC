@@ -140,6 +140,8 @@ public class Robot extends TimedRobot {
         shooter.setShooterRPM(Shooter.RPM.kStop);
         shooter.intakeStop();
         shooter.indexStop();
+        shooter.gathererRetract();
+        shooter.gathererStop();
 
         // Condition for changing cases
         if (Math.abs(drive.getRightEncoderDistance()) < 5 || Math.abs(drive.getLeftEncoderDistance()) < 5) {
@@ -151,11 +153,14 @@ public class Robot extends TimedRobot {
       case stop:
         // Actions in case
         drive.stop();
-        shooter.indexStop();
-        shooter.intakeStop();
         shooter.setShooterRPM(Shooter.RPM.kStop);
         shooter.gathererRetract();
         shooter.gathererStop();
+
+        if (shooter.getBeamBreakHigh()) {
+          shooter.indexStop();
+          shooter.intakeStop();
+        }
 
         // Condition for changing cases
         if (Timer.getFPGATimestamp() - timeStamp > .5) {
