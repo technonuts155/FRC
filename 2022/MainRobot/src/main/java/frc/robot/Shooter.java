@@ -101,24 +101,7 @@ public class Shooter {
                 shooterMotor.set(0);
                 upToSpeed = false;
                 break;
-
-            default:
-                break;
         }
-    }
-
-    public void setShooterRPM(double RPM) {
-        if (RPM == 0) {
-            setShooterPercentOutput(0);
-            upToSpeed = false;
-        } else {
-            pid.setReference(RPM, ControlType.kVelocity);
-            upToSpeed = Math.abs(RPM - shooterEncoder.getVelocity()) <= tolerance;
-        }
-    }
-
-    public void setShooterDynamicRPM() {
-        
     }
 
     public double getTemperature() {
@@ -145,7 +128,9 @@ public class Shooter {
         tolerance = Preferences.getDouble("Tolerance", 100);
     }
 
+
     /** --------- Gatherer Methods --------- */
+
     public void gathererIn() {
         gathererMotor.set(ControlMode.PercentOutput, .5);
     }
