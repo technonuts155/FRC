@@ -25,9 +25,9 @@ public class Shooter {
 
     // Control states for the shooter flywheel
     enum RPM {      // Black magic voodoo enum
-        kHigh,      // Aim for high goal
-        kLow,       // Aim for low goal
-        kStop       // Stop motor
+        kStatic,      // Aim from closer (top goal)
+        kDynamic,       // Aim from farther away (top goal)
+        kStop       // Stop the motor
     }
     private double[] rpmTable = {0, 0, 0, 3600, 3700, 3700, 4000, 4150, 4600, 4900};
 
@@ -47,7 +47,7 @@ public class Shooter {
 
     // RPM setpoint constants for shooter control
     private final double HIGH = 3700.0;
-    private final double LOW = 2700.0;
+    // private final double LOW = 2700.0;
 
     // Tolerance for shooter RPM and boolean for being within tolerance (shooter is up to speed)
     private double tolerance = 100;   
@@ -80,14 +80,21 @@ public class Shooter {
     public void setShooterRPM(Shooter.RPM rpm) {
         // Set RPM reference and update upToSpeed boolean
         switch (rpm) {
-            case kHigh:
+            case kStatic:
                 pid.setReference(HIGH, ControlType.kVelocity);
                 upToSpeed = Math.abs(HIGH - shooterEncoder.getVelocity()) <= tolerance;
                 break;
 
-            case kLow:
-                pid.setReference(LOW, ControlType.kVelocity);
-                upToSpeed = Math.abs(LOW - shooterEncoder.getVelocity()) <= tolerance;
+            case kDynamic:
+                if (Vision.hasTargets() && Vision.distanceFromHub() > 3 && Vision.distanceFromHub() < 7) {
+                    double distance = Vision.distanceFromHub();
+                    double RPM = rpmTable[(int)distance] + (rpmTable[(int)distance + 1] - rpmTable[(int)distance] * (distance % 1));
+                    pid.setReference(RPM, ControlType.kVelocity);
+                    upToSpeed = Math.abs(RPM - shooterEncoder.getVelocity()) <= tolerance;
+                } else {
+                    shooterMotor.set(0);
+                    upToSpeed = false;
+                }
                 break;
 
             case kStop:
@@ -110,15 +117,8 @@ public class Shooter {
         }
     }
 
-    public void setShooterRPM(int distanceFromHub) {
-        if (distanceFromHub < 3 || distanceFromHub > 9) {
-            shooterMotor.set(0);
-            upToSpeed = false;
-        } else {
-            double rpm = rpmTable[distanceFromHub];
-            pid.setReference(rpm, ControlType.kVelocity);
-            upToSpeed = Math.abs(rpm - shooterEncoder.getVelocity()) <= tolerance;
-        }
+    public void setShooterDynamicRPM() {
+        
     }
 
     public double getTemperature() {

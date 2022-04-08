@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
   double timeStamp = 0;
 
   // Debouncer for climber. Gives the lock a half second to move before the lift begins movement
-  Debouncer climbDebouncer = new Debouncer(.5, DebounceType.kRising);
+  Debouncer climbDebouncer = new Debouncer(.5, DebounceType.kBoth);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -59,14 +59,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+      // This line needs to be here
       Vision.updatePipelineResult();
-      SmartDashboard.putNumber("Shooter RPM", shooter.getShooterRPM());
-      if (Vision.hasTargets()) {
-        SmartDashboard.putNumber("Distance", Vision.distanceFromHub());
-      }
-
-      SmartDashboard.putBoolean("Up to Speed", shooter.isUpToSpeed());
-      shooter.updatePIDValues();
     }
 
   /**
@@ -102,8 +96,12 @@ public class Robot extends TimedRobot {
         // Actions in case
         drive.stop();
         shooter.intakeStop();
-        shooter.setShooterRPM(Shooter.RPM.kHigh);
-        if (shooter.isUpToSpeed()) {shooter.indexForwards();} else {shooter.indexStop();}
+        shooter.setShooterRPM(Shooter.RPM.kDynamic);
+        if (shooter.isUpToSpeed()) {
+          shooter.indexForwards();
+        } else {
+          shooter.indexStop();
+        }
 
         // Condition for changing cases
         if (Timer.getFPGATimestamp() - startTime > 1.5 && Timer.getFPGATimestamp() - startTime < 3) {
@@ -113,7 +111,7 @@ public class Robot extends TimedRobot {
 
       case collect:
         // Actions in case
-        drive.pixyAssistedDrive(-.65);
+        drive.pixyAssistedDrive(-.55);
         shooter.intakeIn();
         shooter.indexForwardsSlow();
         shooter.setShooterRPM(Shooter.RPM.kStop);
@@ -129,13 +127,13 @@ public class Robot extends TimedRobot {
       
       case reverse:
         // Actions in case
-        drive.centerOnHub(.65);
+        drive.centerOnHub(.55);
         shooter.setShooterRPM(Shooter.RPM.kStop);
         shooter.intakeStop();
         shooter.indexStop();
 
         // Condition for changing cases
-        if (Math.abs(drive.getRightEncoderDistance()) < 5 || Math.abs(drive.getLeftEncoderDistance()) < 5) {
+        if (Math.abs(drive.getRightEncoderDistance()) < 10 || Math.abs(drive.getLeftEncoderDistance()) < 10) {
           timeStamp = Timer.getFPGATimestamp();
           currentState = AutoStates.shoot;
         }
@@ -220,13 +218,10 @@ public class Robot extends TimedRobot {
     if (OI.shooterManualOverride()) {
       shooter.setShooterPercentOutput(OI.shooterThrottle());
     } else {
-      if (OI.shootHigh()) {
-        shooter.setShooterRPM(Shooter.RPM.kHigh); 
-      } else if (OI.shootLow()) {
-        if (Vision.hasTargets())
-          shooter.setShooterRPM((int)Vision.distanceFromHub());
-        else
-          shooter.setShooterPercentOutput(0);
+      if (OI.shootStaticRPM()) {
+        shooter.setShooterRPM(Shooter.RPM.kStatic); 
+      } else if (OI.shootDynamicRPM()) {
+        shooter.setShooterRPM(Shooter.RPM.kDynamic);
       } else {
         shooter.setShooterRPM(Shooter.RPM.kStop);;
       }
@@ -234,14 +229,19 @@ public class Robot extends TimedRobot {
 
     // Climber control
     if (OI.climbExtend() && !climb.atTop()) {
-      climb.unlock();
-      if (climbDebouncer.calculate(OI.climbExtend())) {climb.extend();}
+        climb.extend();
     } else if (OI.climbRetract() && !climb.atBottom()) {
-      climb.unlock();
-      if (climbDebouncer.calculate(OI.climbRetract())) {climb.retract();}
+        climb.retract();
     } else {
-      climb.stop();
+        climb.stop();
+    }
+
+    if (OI.climbLock()) {
       climb.lock();
+    }
+
+    if (OI.climbUnlock()) {
+      climb.unlock();
     }
 
     // Rumble City
