@@ -42,12 +42,12 @@ public class OI {
     }
 
     // ^ operator is a 'XOR' operator, exclusive-or. Meaning it will return true if ONLY one condition is met, not both.
-    // In this case, shootLow will return true if either trigger is held, but not when both are held.
-    public static boolean shootStaticRPM() { 
+    // In this case, shootDynamicRPM will return true if either trigger is held, but not when both are held.
+    public static boolean shootDynamicRPM() { 
         return (operatorController.getRightTriggerAxis() > .5 ^ operatorController.getLeftTriggerAxis() > .5);
     }
 
-    public static boolean shootDynamicRPM() { 
+    public static boolean shootStaticRPM() { 
         return (operatorController.getRightTriggerAxis() > .5 && operatorController.getLeftTriggerAxis() > .5);
      }
 
