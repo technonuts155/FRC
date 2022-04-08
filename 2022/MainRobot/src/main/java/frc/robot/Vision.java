@@ -21,7 +21,7 @@ public class Vision {
     }
 
     public static boolean hasTargets() {
-        return latestResult.hasTargets();
+        return latestResult == null ? false : latestResult.hasTargets();
     }
 
     public static PhotonTrackedTarget getBestTarget() {
