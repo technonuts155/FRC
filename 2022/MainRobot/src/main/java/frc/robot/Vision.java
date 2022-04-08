@@ -29,15 +29,14 @@ public class Vision {
     }
 
     public static double distanceFromHub() {
-        PhotonTrackedTarget target = getBestTarget();
-        if (target == null)
-            return 50;
+        if (hasTargets() == false)
+            return 100;     // Impossible distance acts as a 'failure' return
 
         double distance = PhotonUtils.calculateDistanceToTargetMeters(
             camHeight,
             targetHeight,
             camPitch,
-            Units.degreesToRadians(target.getPitch())
+            Units.degreesToRadians(getBestTarget().getPitch())
         );
 
         return Units.metersToFeet(distance) * 1.81;
