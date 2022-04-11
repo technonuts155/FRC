@@ -1,47 +1,110 @@
 <xml version="1.0">
 <dashboard>
+	<widget field="Low Climb" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="381"/>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.RobotPreferences">
+		<location x="0" y="180"/>
+	</static-widget>
+	<widget field="Ball is loaded" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="21" y="159"/>
+	</widget>
+	<widget field="Beam Break low" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="21" y="138"/>
+	</widget>
+	<widget field="Beam break high" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="117"/>
+	</widget>
+	<widget field="Auto State" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="96"/>
+	</widget>
+	<widget field="RPM" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="0" y="33"/>
+	</widget>
 	<widget field="Distance" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
 		<location x="0" y="54"/>
 	</widget>
-	<widget field="Area" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="193" y="162"/>
-	</widget>
-	<widget field="Yaw" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="248" y="130"/>
-	</widget>
-	<widget field="Pitch" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="131" y="129"/>
-	</widget>
-	<widget field="# Targets" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="0" y="33"/>
-	</widget>
 	<widget field="Has Targets" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
-		<location x="259" y="73"/>
+		<location x="0" y="75"/>
 	</widget>
 	<widget field="Auto choices" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
 		<location x="0" y="153"/>
 	</widget>
-	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Label">
-		<location x="298" y="388"/>
-		<property name="Text" value="Right Motors Input"/>
-	</static-widget>
-	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.Label">
-		<location x="95" y="385"/>
-		<property name="Text" value="Left Motors Input"/>
-	</static-widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.ConnectionIndicator">
 		<location x="1" y="0"/>
 	</static-widget>
-	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.RobotPreferences">
-		<location x="473" y="235"/>
-	</static-widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
-		<location x="804" y="25"/>
+		<location x="396" y="41"/>
 		<width>521</width>
 		<height>390</height>
-		<property name="Camera Choice" value="mmal_service_16.1-input"/>
+		<property name="Camera Choice" value="HUB Cam-output"/>
 	</static-widget>
 </dashboard>
 <live-window>
+	<widget field="Ungrouped" type="LW Subsystem" class="edu.wpi.first.smartdashboard.livewindow.elements.LWSubsystem">
+		<widget field="DigitalInput[9]" type="Table" class="edu.wpi.first.smartdashboard.livewindow.elements.DigitalInputDisplay">
+			<location x="0" y="0"/>
+			<height>0</height>
+			<width>0</width>
+		</widget>
+		<widget field="DigitalInput[9]" type="Table" class="edu.wpi.first.smartdashboard.livewindow.elements.DigitalInputDisplay">
+			<location x="0" y="0"/>
+			<height>0</height>
+			<width>0</width>
+		</widget>
+		<widget field="DigitalInput[0]" type="Digital Input" class="edu.wpi.first.smartdashboard.livewindow.elements.DigitalInputDisplay">
+			<location x="6" y="16"/>
+			<height>20</height>
+			<width>293</width>
+		</widget>
+		<widget field="DigitalInput[8]" type="Digital Input" class="edu.wpi.first.smartdashboard.livewindow.elements.DigitalInputDisplay">
+			<location x="6" y="36"/>
+			<height>20</height>
+			<width>293</width>
+		</widget>
+		<widget field="PIDController[3]" type="PIDController" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
+			<location x="6" y="56"/>
+			<height>155</height>
+			<width>293</width>
+		</widget>
+		<widget field="PIDController[1]" type="PIDController" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
+			<location x="6" y="211"/>
+			<height>155</height>
+			<width>293</width>
+		</widget>
+		<widget field="PIDController[2]" type="PIDController" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
+			<location x="6" y="366"/>
+			<height>155</height>
+			<width>293</width>
+		</widget>
+		<widget field="DoubleSolenoid[12,4]" type="Double Solenoid" class="edu.wpi.first.smartdashboard.livewindow.elements.RelayController">
+			<location x="6" y="521"/>
+			<height>20</height>
+			<width>293</width>
+		</widget>
+		<widget field="PIDController[4]" type="PIDController" class="edu.wpi.first.smartdashboard.gui.elements.PIDEditor">
+			<location x="6" y="541"/>
+			<height>155</height>
+			<width>293</width>
+		</widget>
+		<widget field="DigitalInput[1]" type="Digital Input" class="edu.wpi.first.smartdashboard.livewindow.elements.DigitalInputDisplay">
+			<location x="6" y="696"/>
+			<height>20</height>
+			<width>293</width>
+		</widget>
+		<widget field="DoubleSolenoid[12,2]" type="Double Solenoid" class="edu.wpi.first.smartdashboard.livewindow.elements.RelayController">
+			<location x="6" y="716"/>
+			<height>20</height>
+			<width>293</width>
+		</widget>
+		<widget field="Servo[9]" type="Servo" class="edu.wpi.first.smartdashboard.livewindow.elements.ServoController">
+			<location x="6" y="736"/>
+			<height>45</height>
+			<width>293</width>
+		</widget>
+		<location x="0" y="0"/>
+		<width>305</width>
+		<height>787</height>
+	</widget>
 </live-window>
 </xml>

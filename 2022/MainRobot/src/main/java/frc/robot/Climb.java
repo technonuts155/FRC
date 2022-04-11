@@ -25,12 +25,12 @@ public class Climb {
     }
 
     public void lock() {
-        climbLock.setAngle(90);
+        climbLock.setAngle(120);
         isLocked = true;
     }
 
     public void unlock() {
-        climbLock.setAngle(0);
+        climbLock.setAngle(90);
         isLocked = false;
     }
 

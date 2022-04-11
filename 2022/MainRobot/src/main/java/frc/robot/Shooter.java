@@ -13,6 +13,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -24,12 +25,12 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 public class Shooter {
 
     // Control states for the shooter flywheel
-    enum RPM {      // Black magic voodoo enum
-        kStatic,      // Aim from closer (top goal)
+    enum RPM {          // Black magic voodoo enum
+        kStatic,        // Aim from closer (top goal)
         kDynamic,       // Aim from farther away (top goal)
-        kStop       // Stop the motor
+        kStop           // Stop the motor
     }
-    private double[] rpmTable = {0, 0, 0, 3600, 3700, 3700, 4000, 4150, 4600, 4900};
+    private double[] rpmTable = {0, 0, 0, 3900, 3900, 3900, 4000, 4150, 4600, 4900};
 
     // Motor Controllers
     private CANSparkMax shooterMotor = new CANSparkMax(RobotMap.SHOOTER_MOTOR, MotorType.kBrushless);
@@ -46,8 +47,7 @@ public class Shooter {
     private RelativeEncoder shooterEncoder;
 
     // RPM setpoint constants for shooter control
-    private final double HIGH = 3700.0;
-    // private final double LOW = 2700.0;
+    private final double HIGH = 3900.0;
 
     // Tolerance for shooter RPM and boolean for being within tolerance (shooter is up to speed)
     private double tolerance = 100;   
@@ -82,11 +82,11 @@ public class Shooter {
         switch (rpm) {
             case kStatic:
                 pid.setReference(HIGH, ControlType.kVelocity);
-                upToSpeed = Math.abs(HIGH - shooterEncoder.getVelocity()) <= tolerance;
+                upToSpeed = Math.abs((HIGH + 50) - shooterEncoder.getVelocity()) <= tolerance;
                 break;
 
             case kDynamic:
-                if (Vision.hasTargets() && Vision.distanceFromHub() > 3 && Vision.distanceFromHub() < 7) {
+                if (Vision.hasTargets() && Vision.distanceFromHub() > 3 && Vision.distanceFromHub() < 8) {
                     double distance = Vision.distanceFromHub();
                     double RPM = rpmTable[(int)distance] + ((rpmTable[(int)distance + 1] - rpmTable[(int)distance]) * (distance % 1));
                     pid.setReference(RPM, ControlType.kVelocity);
@@ -132,7 +132,7 @@ public class Shooter {
     /** --------- Gatherer Methods --------- */
 
     public void gathererIn() {
-        gathererMotor.set(ControlMode.PercentOutput, .5);
+        gathererMotor.set(ControlMode.PercentOutput, 1);
     }
     public void gathererOut() {
         gathererMotor.set(ControlMode.PercentOutput, -.5);
@@ -177,7 +177,7 @@ public class Shooter {
 
     /** Moves the belt up slow enough for the color sensor to recognize a ball */
     public void indexForwardsSlow() {
-        indexerMotor.set(ControlMode.PercentOutput, .55);
+        indexerMotor.set(ControlMode.PercentOutput, .45);
     }
 
     public void indexForwards() {
@@ -204,6 +204,6 @@ public class Shooter {
     }
 
     public boolean ballIsLoaded() {
-        return !getBeamBreakLow() || !getBeamBreakHigh();
+        return getBeamBreakLow() || getBeamBreakHigh();
     }
 }

@@ -41,13 +41,17 @@ public class Robot extends TimedRobot {
   // Debouncer for climber. Gives the lock a half second to move before the lift begins movement
   Debouncer climbDebouncer = new Debouncer(.5, DebounceType.kBoth);
 
+  // Delay for second ball when shooting (in seconds)
+  double shootDelay = .5;
+  double shootTimestamp = 0;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
    */
   @Override
   public void robotInit() {
-    climb.lock();
+    climb.unlock();
   }
 
   /**
@@ -61,6 +65,10 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
       // Vision.updatePipelineResult() needs to be called here or vision tracking will fail
       Vision.updatePipelineResult();
+      SmartDashboard.putNumber("Distance", Vision.distanceFromHub());
+      SmartDashboard.putBoolean("Has Targets", Vision.hasTargets());
+      SmartDashboard.putNumber("RPM", shooter.getShooterRPM());
+      SmartDashboard.putBoolean("Low Climb", climb.atBottom());
     }
 
   /**
@@ -83,7 +91,7 @@ public class Robot extends TimedRobot {
 
     // Get a system timestamp of the start of Autonomous
     startTime = Timer.getFPGATimestamp();
-    timeStamp = startTime;
+    timeStamp = Timer.getFPGATimestamp();
 
     // Makes sure gatherer arm is up for the start of the game
     shooter.gathererRetract();
@@ -92,6 +100,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
+    SmartDashboard.putString("Auto State", currentState.toString());
+    SmartDashboard.putBoolean("Beam break high", shooter.getBeamBreakHigh());
+    SmartDashboard.putBoolean("Beam Break low", shooter.getBeamBreakLow());
+    SmartDashboard.putBoolean("Ball is loaded", shooter.ballIsLoaded());
     switch (currentState) {
       case shoot:
         // Actions in case
@@ -144,7 +156,7 @@ public class Robot extends TimedRobot {
         shooter.gathererStop();
 
         // Condition for changing cases
-        if (Math.abs(drive.getRightEncoderDistance()) < 5 || Math.abs(drive.getLeftEncoderDistance()) < 5) {
+        if (Math.abs(drive.getRightEncoderDistance()) < 10 || Math.abs(drive.getLeftEncoderDistance()) < 10) {
           timeStamp = Timer.getFPGATimestamp();
           currentState = AutoStates.shoot;
         }
@@ -160,6 +172,9 @@ public class Robot extends TimedRobot {
         if (shooter.getBeamBreakHigh()) {
           shooter.indexStop();
           shooter.intakeStop();
+        } else {
+          shooter.indexForwardsSlow();
+          shooter.intakeIn();
         }
 
         // Condition for changing cases
@@ -184,7 +199,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    climb.unlock();
+  }
 
   /** This function is called periodically during operator control. */
   @Override
@@ -218,7 +235,11 @@ public class Robot extends TimedRobot {
     }
 
     // Indexer control
-    if(OI.moveIndexUp() || shooter.isUpToSpeed()) {
+    if (shooter.isUpToSpeed() == false) {
+      shootTimestamp = Timer.getFPGATimestamp();
+    }
+
+    if(OI.moveIndexUp() || (shooter.isUpToSpeed() && Timer.getFPGATimestamp() - shootTimestamp > shootDelay)) {
       shooter.indexForwards();
     } else if ((OI.intakeIn() || OI.pixyAssistedDrive()) && shooter.getBeamBreakHigh() == false) {
       shooter.indexForwardsSlow();
@@ -259,7 +280,8 @@ public class Robot extends TimedRobot {
     }
 
     // Rumble City
-    if (drive.isCenteredOnHub() && Vision.distanceFromHub() >= 3 && Vision.distanceFromHub() <= 9.5) {
+    if ((drive.isCenteredOnHub() && Vision.distanceFromHub() >= 3 && Vision.distanceFromHub() <= 7.5) ||
+       ((OI.pixyAssistedDrive() || OI.intakeIn()) && shooter.getBeamBreakLow())) {
       OI.driverController.setRumble(RumbleType.kLeftRumble, .75);
       OI.driverController.setRumble(RumbleType.kRightRumble, .75);
       OI.operatorController.setRumble(RumbleType.kLeftRumble, .75);
