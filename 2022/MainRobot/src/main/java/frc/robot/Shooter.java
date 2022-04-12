@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.I2C;
@@ -52,21 +53,21 @@ public class Shooter {
     private RelativeEncoder shooterEncoder;
 
     // RPM setpoint constants for shooter control
-    private final double HIGH = 3900.0;
+    private final double HIGH = 3700.0;
 
     // Color sensor and Beam Breaks
     DigitalInput beamBreakHigh = new DigitalInput(RobotMap.BEAM_BREAK_HIGH);
     DigitalInput beamBreakLow = new DigitalInput(RobotMap.BEAM_BREAK_LOW);
 
     //Delay for shooter
-    private double shooterDelay = .5;
+    private double shooterDelay = .15;
     private double shooterTimestamp = 0;
 
     private boolean highBeamBreakWasTrue = beamBreakHigh.get();
 
 
     // Tolerance for shooter RPM and boolean for being within tolerance (shooter is up to speed)
-    private double tolerance = 100;   
+    private double tolerance = 150;   
     private boolean upToSpeed = false;
 
 
@@ -103,6 +104,7 @@ public class Shooter {
                 if (Vision.hasTargets() && Vision.distanceFromHub() > 3 && Vision.distanceFromHub() < 8) {
                     double distance = Vision.distanceFromHub();
                     double RPM = rpmTable[(int)distance] + ((rpmTable[(int)distance + 1] - rpmTable[(int)distance]) * (distance % 1));
+                    SmartDashboard.putNumber("Setpoint", RPM);
                     pid.setReference(RPM, ControlType.kVelocity);
                     upToSpeed = Math.abs(RPM - shooterEncoder.getVelocity()) <= tolerance;
                 } else {
@@ -221,7 +223,7 @@ public class Shooter {
             shooterTimestamp = Timer.getFPGATimestamp();
         }
         highBeamBreakWasTrue = beamBreakHigh.get();
-        return beamBreakHigh.get();
+        return !beamBreakHigh.get();
     }
 
     public boolean ballIsLoaded() {
