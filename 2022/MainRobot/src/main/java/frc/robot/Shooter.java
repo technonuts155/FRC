@@ -32,6 +32,11 @@ public class Shooter {
     }
     private double[] rpmTable = {0, 0, 0, 3900, 3900, 3900, 4000, 4150, 4600, 4900};
 
+    /**
+     * Tentative rpm table
+     * private double[] rpmTable = {0, 0, 0, 3950, 3975, 4000, 4050, 4200, 4800, 0};
+     */
+
     // Motor Controllers
     private CANSparkMax shooterMotor = new CANSparkMax(RobotMap.SHOOTER_MOTOR, MotorType.kBrushless);
     private VictorSPX indexerMotor = new VictorSPX(RobotMap.INDEXER_MOTOR);
@@ -49,14 +54,23 @@ public class Shooter {
     // RPM setpoint constants for shooter control
     private final double HIGH = 3900.0;
 
+    // Color sensor and Beam Breaks
+    DigitalInput beamBreakHigh = new DigitalInput(RobotMap.BEAM_BREAK_HIGH);
+    DigitalInput beamBreakLow = new DigitalInput(RobotMap.BEAM_BREAK_LOW);
+
+    //Delay for shooter
+    private double shooterDelay = .5;
+    private double shooterTimestamp = 0;
+
+    private boolean highBeamBreakWasTrue = beamBreakHigh.get();
+
+
     // Tolerance for shooter RPM and boolean for being within tolerance (shooter is up to speed)
     private double tolerance = 100;   
     private boolean upToSpeed = false;
 
-    // Color sensor and Beam Breaks
-    ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
-    DigitalInput beamBreakHigh = new DigitalInput(RobotMap.BEAM_BREAK_HIGH);
-    DigitalInput beamBreakLow = new DigitalInput(RobotMap.BEAM_BREAK_LOW);
+
+
     
     public Shooter() {
 
@@ -117,7 +131,10 @@ public class Shooter {
     }
 
     public boolean isUpToSpeed() {
-        return upToSpeed;
+      if(upToSpeed == true && Timer.getFPGATimestamp() - shooterTimestamp >= shooterDelay) 
+        return true;
+      else
+        return false;
     }
 
     public void updatePIDValues() {
@@ -200,7 +217,11 @@ public class Shooter {
     }
 
     public boolean getBeamBreakHigh() {
-        return !beamBreakHigh.get();
+        if(beamBreakHigh.get() == false && highBeamBreakWasTrue == true) {
+            shooterTimestamp = Timer.getFPGATimestamp();
+        }
+        highBeamBreakWasTrue = beamBreakHigh.get();
+        return beamBreakHigh.get();
     }
 
     public boolean ballIsLoaded() {

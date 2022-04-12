@@ -59,10 +59,10 @@ public class OI {
         return (operatorController.getRawButton(START_BUTTON));
     }
 
-    /** What are you doing? it's time to stop. */
-    public static String ramp() {
-        return "what the heck is wrong with you. delete this code NOW";
-    }
+    // /** What are you doing? it's time to stop. */
+    // public static String ramp() {
+    //     return "what the heck is wrong with you. delete this code NOW";
+    // }
 
     public static boolean moveIndexDown() {
         return operatorController.getRawButton(A_BUTTON);
