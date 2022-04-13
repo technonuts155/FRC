@@ -219,7 +219,7 @@ public class Shooter {
     }
 
     public boolean getBeamBreakHigh() {
-        if(beamBreakHigh.get() == false && highBeamBreakWasTrue == true) {
+        if(beamBreakHigh.get() == true && highBeamBreakWasTrue == false) {
             shooterTimestamp = Timer.getFPGATimestamp();
         }
         highBeamBreakWasTrue = beamBreakHigh.get();
