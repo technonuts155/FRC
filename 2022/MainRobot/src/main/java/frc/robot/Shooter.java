@@ -30,7 +30,7 @@ public class Shooter {
         kDynamic,       // Aim from farther away (top goal)
         kStop           // Stop the motor
     }
-    private double[] rpmTable = {0, 0, 0, 3900, 3900, 3900, 4000, 4150, 4600, 4900};
+    private double[] rpmTable = {0, 0, 0, 3700, 3700, 3900, 4100, 4450, 4600, 4900};
 
     // Motor Controllers
     private CANSparkMax shooterMotor = new CANSparkMax(RobotMap.SHOOTER_MOTOR, MotorType.kBrushless);
@@ -47,7 +47,22 @@ public class Shooter {
     private RelativeEncoder shooterEncoder;
 
     // RPM setpoint constants for shooter control
+<<<<<<< Updated upstream
     private final double HIGH = 3900.0;
+=======
+    private final double HIGH = 3700.0;
+
+    // Color sensor and Beam Breaks
+    DigitalInput beamBreakHigh = new DigitalInput(RobotMap.BEAM_BREAK_HIGH);
+    DigitalInput beamBreakLow = new DigitalInput(RobotMap.BEAM_BREAK_LOW);
+
+    //Delay for shooter
+    private double shooterDelay = .05;
+    private double shooterTimestamp = 0;
+
+    private boolean highBeamBreakWasTrue = getBeamBreakHigh();
+
+>>>>>>> Stashed changes
 
     // Tolerance for shooter RPM and boolean for being within tolerance (shooter is up to speed)
     private double tolerance = 100;   
@@ -82,7 +97,7 @@ public class Shooter {
         switch (rpm) {
             case kStatic:
                 pid.setReference(HIGH, ControlType.kVelocity);
-                upToSpeed = Math.abs((HIGH + 50) - shooterEncoder.getVelocity()) <= tolerance;
+                upToSpeed = Math.abs(HIGH - shooterEncoder.getVelocity()) <= tolerance || shooterEncoder.getVelocity() > HIGH;
                 break;
 
             case kDynamic:
@@ -90,7 +105,7 @@ public class Shooter {
                     double distance = Vision.distanceFromHub();
                     double RPM = rpmTable[(int)distance] + ((rpmTable[(int)distance + 1] - rpmTable[(int)distance]) * (distance % 1));
                     pid.setReference(RPM, ControlType.kVelocity);
-                    upToSpeed = Math.abs(RPM - shooterEncoder.getVelocity()) <= tolerance;
+                    upToSpeed = Math.abs(RPM - shooterEncoder.getVelocity()) <= tolerance || shooterEncoder.getVelocity() > RPM;
                 } else {
                     shooterMotor.set(0);
                     upToSpeed = false;
@@ -117,7 +132,19 @@ public class Shooter {
     }
 
     public boolean isUpToSpeed() {
+<<<<<<< Updated upstream
         return upToSpeed;
+=======
+        if (highBeamBreakWasTrue && getBeamBreakHigh() == false) {
+            shooterTimestamp = Timer.getFPGATimestamp();
+        }
+        highBeamBreakWasTrue = getBeamBreakHigh();
+
+        if(upToSpeed == true && Timer.getFPGATimestamp() - shooterTimestamp >= shooterDelay) 
+            return true;
+        else
+            return false;
+>>>>>>> Stashed changes
     }
 
     public void updatePIDValues() {

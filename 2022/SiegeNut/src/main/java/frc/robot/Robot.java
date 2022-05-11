@@ -3,7 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,8 +18,7 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  Shooter shooter = new Shooter();
-  Drive drive = new Drive();
+  
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -80,19 +78,19 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    drive.arcadeDrive();
+    Drive.arcadeDrive();
     
     if(OI.timeToShoot()) {
-      shooter.intakeIn();
-    } else if(OI.intakeIn() && shooter.getBeamBreak() == false) {
-      shooter.intakeIn();
+      Shooter.intakeIn();
+    } else if(OI.intakeIn() && Shooter.getBeamBreak() == false) {
+      Shooter.intakeIn();
     } else if(OI.intakeOut()) {
-      shooter.intakeOut();
+      Shooter.intakeOut();
     } else {
-      shooter.intakeStop();
+      Shooter.intakeStop();
     }
 
-    shooter.setShootGo();
+    Shooter.setShootGo();
   }
   /** This function is called once when the robot is disabled. */
   @Override

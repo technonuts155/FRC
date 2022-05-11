@@ -84,7 +84,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     // Make sure autonomous starts by shooting
-    currentState = AutoStates.shoot;
+    currentState = AutoStates.collect;
 
     // Zero the encoders
     drive.resetEncoders();
@@ -140,7 +140,7 @@ public class Robot extends TimedRobot {
         shooter.gathererIn();
 
         // Condition for changing cases
-        if(shooter.ballIsLoaded() == true) {
+        if(shooter.ballIsLoaded() == true || Timer.getFPGATimestamp() - timeStamp > 2.5) {
           timeStamp = Timer.getFPGATimestamp();
           currentState = AutoStates.stop;
         }
@@ -280,7 +280,7 @@ public class Robot extends TimedRobot {
     }
 
     // Rumble City
-    if ((drive.isCenteredOnHub() && Vision.distanceFromHub() >= 3 && Vision.distanceFromHub() <= 7.5) ||
+    if ((drive.isCenteredOnHub() && Vision.distanceFromHub() >= 3 && Vision.distanceFromHub() <= 6.5) ||
        ((OI.pixyAssistedDrive() || OI.intakeIn()) && shooter.getBeamBreakLow())) {
       OI.driverController.setRumble(RumbleType.kLeftRumble, .75);
       OI.driverController.setRumble(RumbleType.kRightRumble, .75);
