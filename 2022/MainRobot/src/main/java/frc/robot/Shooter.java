@@ -47,9 +47,7 @@ public class Shooter {
     private RelativeEncoder shooterEncoder;
 
     // RPM setpoint constants for shooter control
-<<<<<<< Updated upstream
-    private final double HIGH = 3900.0;
-=======
+
     private final double HIGH = 3700.0;
 
     // Color sensor and Beam Breaks
@@ -62,16 +60,9 @@ public class Shooter {
 
     private boolean highBeamBreakWasTrue = getBeamBreakHigh();
 
->>>>>>> Stashed changes
-
     // Tolerance for shooter RPM and boolean for being within tolerance (shooter is up to speed)
     private double tolerance = 100;   
     private boolean upToSpeed = false;
-
-    // Color sensor and Beam Breaks
-    ColorSensorV3 colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
-    DigitalInput beamBreakHigh = new DigitalInput(RobotMap.BEAM_BREAK_HIGH);
-    DigitalInput beamBreakLow = new DigitalInput(RobotMap.BEAM_BREAK_LOW);
     
     public Shooter() {
 
@@ -132,9 +123,6 @@ public class Shooter {
     }
 
     public boolean isUpToSpeed() {
-<<<<<<< Updated upstream
-        return upToSpeed;
-=======
         if (highBeamBreakWasTrue && getBeamBreakHigh() == false) {
             shooterTimestamp = Timer.getFPGATimestamp();
         }
@@ -144,7 +132,6 @@ public class Shooter {
             return true;
         else
             return false;
->>>>>>> Stashed changes
     }
 
     public void updatePIDValues() {
