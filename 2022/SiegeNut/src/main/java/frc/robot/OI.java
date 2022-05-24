@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.sql.Driver;
+
 import edu.wpi.first.wpilibj.XboxController;
 
 public class OI {
@@ -25,16 +27,16 @@ public class OI {
         return driveController.getRawAxis(LEFT_JOYSTICK_VERTICAL);
     }
     public static double getDriveRotation() {
-        return driveController.getRawAxis(RIGHT_JOYSTICK_HORIZONTAL);
+        return -driveController.getRawAxis(RIGHT_JOYSTICK_HORIZONTAL);
     }
     public static boolean intakeIn() {
-        return driveController.getRawButton(X_BUTTON);
+        return driveController.getLeftBumper();
     }
     public static boolean intakeOut() {
-        return driveController.getRawButton(B_BUTTON);
+        return driveController.getRightBumper();
     }
     public static double shooterOutput() {
-        return driveController.getRightTriggerAxis();
+        return driveController.getRightTriggerAxis() > .65 ? .65 : driveController.getRightTriggerAxis();
     }
     public static boolean timeToShoot() {
         return driveController.getLeftTriggerAxis() > .5;
